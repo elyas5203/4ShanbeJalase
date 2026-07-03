@@ -1,0 +1,64 @@
+[Fri Jul  3 20:58:43 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Fri Jul  3 20:59:17 2026] [::1]:44146 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44146 [200]: GET /index.php
+[Fri Jul  3 20:59:17 2026] [::1]:44146 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44148 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44148 [500]: POST /api.php?action=getInitialData
+[Fri Jul  3 20:59:17 2026] [::1]:44148 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44158 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44158 [200]: GET /sw.js
+[Fri Jul  3 20:59:17 2026] [::1]:44158 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44164 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44176 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44186 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44164 [200]: GET /
+[Fri Jul  3 20:59:17 2026] [::1]:44164 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44176 [200]: GET /index.php
+[Fri Jul  3 20:59:17 2026] [::1]:44176 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44186 [200]: GET /assets/default-avatar.svg
+[Fri Jul  3 20:59:17 2026] [::1]:44186 Closing
+[Fri Jul  3 20:59:17 2026] [::1]:44200 Accepted
+[Fri Jul  3 20:59:17 2026] [::1]:44200 [200]: GET /assets/favicon.svg
+[Fri Jul  3 20:59:17 2026] [::1]:44200 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55942 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55942 [200]: GET /index.php
+[Fri Jul  3 21:02:48 2026] [::1]:55942 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55954 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55954 [500]: POST /api.php?action=getInitialData
+[Fri Jul  3 21:02:48 2026] [::1]:55954 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55960 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55960 [200]: GET /sw.js
+[Fri Jul  3 21:02:48 2026] [::1]:55960 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55964 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55968 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55964 [200]: GET /
+[Fri Jul  3 21:02:48 2026] [::1]:55964 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55974 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55968 [200]: GET /assets/default-avatar.svg
+[Fri Jul  3 21:02:48 2026] [::1]:55974 [200]: GET /index.php
+[Fri Jul  3 21:02:48 2026] [::1]:55974 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55968 Closing
+[Fri Jul  3 21:02:48 2026] [::1]:55980 Accepted
+[Fri Jul  3 21:02:48 2026] [::1]:55980 [200]: GET /assets/favicon.svg
+[Fri Jul  3 21:02:48 2026] [::1]:55980 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41290 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41290 [200]: GET /index.php
+[Fri Jul  3 21:04:27 2026] [::1]:41290 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41296 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41296 [500]: POST /api.php?action=getInitialData
+[Fri Jul  3 21:04:27 2026] [::1]:41296 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41308 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41308 [200]: GET /sw.js
+[Fri Jul  3 21:04:27 2026] [::1]:41308 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41324 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41324 [200]: GET /
+[Fri Jul  3 21:04:27 2026] [::1]:41324 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41334 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41348 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41334 [200]: GET /assets/default-avatar.svg
+[Fri Jul  3 21:04:27 2026] [::1]:41348 [200]: GET /index.php
+[Fri Jul  3 21:04:27 2026] [::1]:41348 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41334 Closing
+[Fri Jul  3 21:04:27 2026] [::1]:41362 Accepted
+[Fri Jul  3 21:04:27 2026] [::1]:41362 [200]: GET /assets/favicon.svg
+[Fri Jul  3 21:04:27 2026] [::1]:41362 Closing

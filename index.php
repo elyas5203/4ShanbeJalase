@@ -163,6 +163,7 @@ class Chart {
     .fa-info-circle::before { content: "ℹ"; } .fa-exclamation-circle::before, .fa-exclamation-triangle::before { content: "⚠"; }
     .fa-question-circle::before { content: "؟"; } .fa-search::before { content: "🔎"; } .fa-arrow-right::before { content: "→"; }
 
+    :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --border: #e2e8f0; --success: #10b981; --danger: #ef4444; }
 
     html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
     body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; -moz-font-feature-settings: "ss01"; -webkit-font-feature-settings: "ss01"; font-feature-settings: "ss01"; }
@@ -508,7 +509,6 @@ class Chart {
       --primary:#12335f;
       --accent:#c47b26;
       --accent2:#0f766e;
-      --success: #10b981;
       --danger:#c63d4c;
       --bg:#f5ead3;
       --card-bg:rgba(255,250,238,.84);
@@ -801,9 +801,6 @@ class Chart {
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; }
     }
-
-
-    @media print {
       body { background: white !important; padding: 0 !important; margin: 0 !important; }
       .header, .bottom-nav, .sidebar, .sidebar-overlay, .fab, .container, .modal, #confirm-modal, #lightbox, #prompt-modal { display: none !important; }
       #report-modal { display: block !important; position: static !important; background: white !important; padding: 0 !important; margin: 0 !important; visibility: visible !important; }
@@ -1646,7 +1643,7 @@ class Chart {
       --elite-blue: #0e4c81;
       --elite-teal: #087f78;
       --elite-gold: #d99b2b;
-      --elite-cream: #f1f5f9;
+      --elite-cream: #fff4d6;
       --elite-paper: rgba(255, 250, 235, .78);
       --elite-glass: rgba(255, 255, 255, .58);
       --elite-line: rgba(255, 255, 255, .62);
@@ -1974,37 +1971,6 @@ class Chart {
       .modal { align-items: flex-end !important; }
     }
 
-    body.dark-mode {
-      --bg: #08111f;
-      --text: #f1f5f9;
-      --border: rgba(255,255,255,.12);
-      background:
-        radial-gradient(circle at var(--spot-x, 18%) var(--spot-y, 8%), rgba(217,155,43,.23), transparent 19rem),
-        radial-gradient(circle at 92% 5%, rgba(8,127,120,.18), transparent 24rem),
-        linear-gradient(132deg, #050914 0%, #0b1930 54%, #21180e 100%) !important;
-    }
-    body.dark-mode .card, body.dark-mode .modal-box, body.dark-mode .confirm-box, body.dark-mode .sidebar {
-      background: linear-gradient(145deg, rgba(14,27,51,.82), rgba(25,25,27,.70)) !important;
-      border-color: rgba(255,255,255,.13) !important;
-      color: #f1f5f9 !important;
-    }
-    body.dark-mode .dash-item, body.dark-mode .student-row, body.dark-mode .archive-item, body.dark-mode .calendar-item, body.dark-mode .note-head, body.dark-mode .acc-card, body.dark-mode .plan-card, body.dark-mode .search-result, body.dark-mode .alert-card {
-      background: linear-gradient(145deg, rgba(22,36,62,.72), rgba(31,31,31,.54)) !important;
-      border-color: rgba(255,255,255,.12) !important;
-    }
-    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .modal-box h3, body.dark-mode .sidebar h2 { color: #ffffff !important; }
-    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-      background: rgba(7,14,26,.72) !important;
-      color: #fff9ea !important;
-      border-color: rgba(255,255,255,.14) !important;
-    }
-    body.dark-mode label { color: #f1f5f9 !important; }
-    body.dark-mode .plan-body, body.dark-mode .acc-body, body.dark-mode .note-body { color: #f1f5f9 !important; background: rgba(255,255,255,0.05) !important; }
-    body.dark-mode .dash-item b, body.dark-mode .dash-item span, body.dark-mode .student-row b { color: #f1f5f9 !important; }
-    body.dark-mode .attendance-session-head b { color: #ffffff !important; }
-
-    @media print {
-      body { background: #fff !important; }
       .card, .modal-box, .confirm-box { box-shadow: none !important; backdrop-filter: none !important; }
     }
 
@@ -2821,7 +2787,6 @@ class Chart {
   </style>
 </head>
 <body>
-<script>if(localStorage.getItem('charshanbeDarkMode')==='1')document.body.classList.add('dark-mode');</script>
 
   <div id="confirm-modal" class="modal" style="z-index: 7000;">
     <div class="confirm-box">
@@ -2859,7 +2824,7 @@ class Chart {
   </div>
 
   <div class="header">
-    <div class="menu-btn" onclick="toggleSidebar()" role="button" tabindex="0" aria-label="باز کردن منو">☰</div>
+    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
     <h1 style="margin:0; font-size:1.2rem;" id="page-title">داشبورد</h1>
     <div style="font-size:0.9rem; font-weight:bold; opacity:0.9;" id="header-date">...</div>
   </div>
@@ -2879,7 +2844,6 @@ class Chart {
     <div class="menu-item" onclick="nav('score')"><i class="fas fa-star-half-alt"></i> امتیازدهی</div>
     <div class="menu-item" onclick="nav('notes')"><i class="fas fa-pen-nib"></i> یادداشت‌ها</div>
     <div class="menu-item" onclick="nav('settings')"><i class="fas fa-user-cog"></i> تنظیمات</div>
-    <div class="menu-item" onclick="toggleDark()" style="margin-top:auto;"><i class="fas fa-moon"></i> حالت شب</div>
   </div>
 
   <div class="container">
@@ -2991,8 +2955,6 @@ class Chart {
           </div>
           <label>ملاحظات پزشکی / خاص:</label><input type="text" id="sp-medical">
           <button class="btn btn-green" onclick="saveProfile()" style="margin-top:15px;">💾 ذخیره پروفایل</button>
-          <hr style="opacity:0.1; margin:20px 0;">
-          <button class="btn btn-red" onclick="askDeleteStudent()" style="background:linear-gradient(135deg,#861f35,#c93445) !important; opacity:0.9;">🗑️ حذف کامل این متربی</button>
         </div>
       </div>
       <div id="tab-mi" class="tab-content">
@@ -3508,24 +3470,6 @@ function callApi(action, args, success, failure) {
       document.querySelectorAll('.to-persian').forEach(i=>i.value=toPersianNum(t));
       initPersianInputs();
       attachDatePickers();
-
-      // Keyboard accessibility for non-native buttons
-      document.querySelectorAll('.menu-item, .nav-item, .tool-btn, .menu-btn, .tab').forEach(el => {
-        if (!el.getAttribute('role')) el.setAttribute('role', 'button');
-        if (el.tabIndex < 0) el.tabIndex = 0;
-      });
-
-      if (!window.__keyboardBound) {
-        document.addEventListener('keydown', e => {
-          if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute('role') === 'button') {
-            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
-              e.preventDefault();
-              e.target.click();
-            }
-          }
-        });
-        window.__keyboardBound = true;
-      }
       if(document.getElementById('header-date')) document.getElementById('header-date').innerText = t;
       try { localStorage.removeItem('charshanbeAppData'); } catch(e) {}
       fetchData();
@@ -3609,11 +3553,6 @@ function callApi(action, args, success, failure) {
 
   function renderView(v){
       if(!DB || !DB.students) return;
-      // Re-apply accessibility traits for dynamically rendered views
-      document.querySelectorAll('.menu-item, .nav-item, .tool-btn, .menu-btn, .tab').forEach(el => {
-        if (!el.getAttribute('role')) el.setAttribute('role', 'button');
-        if (el.tabIndex < 0) el.tabIndex = 0;
-      });
       try {
         if(v === 'dash') { renderDash(); renderAlerts(); }
         else if(v === 'profiles') renderProfiles();
@@ -3856,32 +3795,11 @@ function callApi(action, args, success, failure) {
       .catch(err => { hideLoading(); showAlert(err.message, 'error'); });
   }
 
-  function askDeleteStudent() {
-    if(!currentStudent) return;
-    showConfirm(`آیا از حذف کامل "${currentStudent}" اطمینان دارید؟\nاین عمل غیرقابل بازگشت است و تمامی سوابق حضور، امتیازات و یادداشت‌های مربوطه برای همیشه پاک خواهد شد.`, () => {
-      showLoading();
-      app.run.withSuccessHandler(r => {
-        hideLoading();
-        showToast(r.msg);
-        nav('profiles');
-        fetchData();
-      }).withFailureHandler(e => {
-        hideLoading();
-        showAlert(e.message, 'error');
-      }).deleteStudent(currentStudent);
-    });
-  }
-
   function saveProfile(){
     let ps = []; document.querySelectorAll('.phone-item').forEach(p => { let inps = p.querySelectorAll('input'); if(inps[1].value) ps.push({label: inps[0].value, number: inps[1].value}); });
     showLoading(); const d={originalName:currentStudent, image:document.getElementById('sp-input-img').value, bio:document.getElementById('sp-bio').value, parentNote:document.getElementById('sp-parent-note').value, phone:JSON.stringify(ps), dob:document.getElementById('sp-dob').value, school:document.getElementById('sp-school').value, medical:document.getElementById('sp-medical').value}; app.run.withSuccessHandler(r=>{ hideLoading(); showToast(r.msg); fetchData(); }).updateStudentProfile(d);
   }
   function addStudent(){ let n=document.getElementById('new-name').value; if(n) app.run.withSuccessHandler(fetchData).addStudent(n); }
-  function toggleDark(){
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('charshanbeDarkMode', isDark ? '1' : '0');
-    toggleSidebar();
-  }
   function openPlanModal(){ document.getElementById('p-id').value=""; document.getElementById('modules-container').innerHTML=""; document.getElementById('plan-modal').style.display='flex'; }
 
   function editPlan(id){
@@ -4150,7 +4068,7 @@ function callApi(action, args, success, failure) {
   function renderAlerts(){
     const box=document.getElementById('alerts-list'); if(!box) return;
     const alerts=getVisibleAlerts();
-    box.innerHTML = alerts.length ? alerts.map(a=>`<div class="alert-card ${a.level}" style="position:relative; padding-left:46px;"><button onclick="dismissAlert('${a.id || `${a.title}:${a.text}`}')" title="دیگر نمایش نده" aria-label="بستن هشدار" style="position:absolute; left:12px; top:12px; width:28px; height:28px; border:0; border-radius:50%; background:#f1f5f9; color:#64748b; cursor:pointer; font-size:1.1rem;">×</button><b>${a.title}</b><br><span>${a.text}</span></div>`).join('') : '<p style="opacity:.65;text-align:center;">فعلاً هشدار مهمی ثبت نشده است.</p>';
+    box.innerHTML = alerts.length ? alerts.map(a=>`<div class="alert-card ${a.level}" style="position:relative; padding-left:46px;"><button onclick="dismissAlert('${a.id || `${a.title}:${a.text}`}')" title="دیگر نمایش نده" style="position:absolute; left:12px; top:12px; width:28px; height:28px; border:0; border-radius:50%; background:#f1f5f9; color:#64748b; cursor:pointer; font-size:1.1rem;">×</button><b>${a.title}</b><br><span>${a.text}</span></div>`).join('') : '<p style="opacity:.65;text-align:center;">فعلاً هشدار مهمی ثبت نشده است.</p>';
   }
   function runGlobalSearch(q){
     const out=document.getElementById('global-search-results'); if(!out) return;

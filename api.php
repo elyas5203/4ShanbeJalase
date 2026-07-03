@@ -15,7 +15,6 @@ try {
         case 'getClassMIData': jsonResponse(getClassMIData($pdo));
         case 'getFullStudentProfile': jsonResponse(getFullStudentProfile($pdo, $args[0] ?? ''));
         case 'addStudent': jsonResponse(addStudent($pdo, $args[0] ?? ''));
-        case 'deleteStudent': jsonResponse(deleteStudent($pdo, $args[0] ?? ''));
         case 'addManualScore': jsonResponse(addManualScore($pdo, $args[0] ?? '', $args[1] ?? 0));
         case 'submitAttendance': jsonResponse(submitAttendance($pdo, $args[0] ?? []));
         case 'getAttendanceSessions': jsonResponse(getAttendanceSessions($pdo, (int)($args[0] ?? 80), (int)($args[1] ?? 0)));
@@ -229,23 +228,6 @@ function saveSystemSettings(PDO $pdo, array $f): array {
     $st = $pdo->prepare('INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value`=VALUES(`value`)');
     foreach ($f as $k => $v) $st->execute([$k, $v]);
     return ['success'=>true, 'msg'=>'✅ تنظیمات ذخیره شد.'];
-}
-
-function deleteStudent(PDO $pdo, string $name): array {
-    $r = getStudentByName($pdo, $name);
-    if (!$r) return ['success'=>false, 'msg'=>'متربی یافت نشد'];
-
-    // Delete profile image if exists
-    $img = (string)($r['image'] ?? '');
-    if ($img !== '' && preg_match('~^uploads/students/~', $img)) {
-        $path = __DIR__ . '/' . $img;
-        if (file_exists($path)) @unlink($path);
-    }
-
-    // Cascade delete handles attendance_records and mi_logs due to foreign keys in schema
-    $pdo->prepare('DELETE FROM students WHERE id=?')->execute([$r['id']]);
-
-    return ['success'=>true, 'msg'=>'متربی و تمامی اطلاعات مربوطه حذف شدند.'];
 }
 
 function addStudent(PDO $pdo, string $name): array {
