@@ -2836,6 +2836,7 @@ class Chart {
   </style>
 </head>
 <body>
+<script>if(localStorage.getItem('charshanbeDarkMode')==='1')document.body.classList.add('dark-mode');</script>
 
   <div id="confirm-modal" class="modal" style="z-index: 7000;">
     <div class="confirm-box">
@@ -2873,7 +2874,7 @@ class Chart {
   </div>
 
   <div class="header">
-    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+    <div class="menu-btn" onclick="toggleSidebar()" role="button" tabindex="0" aria-label="باز کردن منو">☰</div>
     <h1 style="margin:0; font-size:1.2rem;" id="page-title">داشبورد</h1>
     <div style="font-size:0.9rem; font-weight:bold; opacity:0.9;" id="header-date">...</div>
   </div>
@@ -3520,6 +3521,24 @@ function callApi(action, args, success, failure) {
       document.querySelectorAll('.to-persian').forEach(i=>i.value=toPersianNum(t));
       initPersianInputs();
       attachDatePickers();
+
+      // Keyboard accessibility for non-native buttons
+      document.querySelectorAll('.menu-item, .nav-item, .tool-btn, .menu-btn, .tab').forEach(el => {
+        if (!el.getAttribute('role')) el.setAttribute('role', 'button');
+        if (el.tabIndex < 0) el.tabIndex = 0;
+      });
+
+      if (!window.__keyboardBound) {
+        document.addEventListener('keydown', e => {
+          if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute('role') === 'button') {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+              e.preventDefault();
+              e.target.click();
+            }
+          }
+        });
+        window.__keyboardBound = true;
+      }
       if(document.getElementById('header-date')) document.getElementById('header-date').innerText = t;
       try { localStorage.removeItem('charshanbeAppData'); } catch(e) {}
       fetchData();
@@ -3603,6 +3622,11 @@ function callApi(action, args, success, failure) {
 
   function renderView(v){
       if(!DB || !DB.students) return;
+      // Re-apply accessibility traits for dynamically rendered views
+      document.querySelectorAll('.menu-item, .nav-item, .tool-btn, .menu-btn, .tab').forEach(el => {
+        if (!el.getAttribute('role')) el.setAttribute('role', 'button');
+        if (el.tabIndex < 0) el.tabIndex = 0;
+      });
       try {
         if(v === 'dash') { renderDash(); renderAlerts(); }
         else if(v === 'profiles') renderProfiles();
@@ -3850,7 +3874,11 @@ function callApi(action, args, success, failure) {
     showLoading(); const d={originalName:currentStudent, image:document.getElementById('sp-input-img').value, bio:document.getElementById('sp-bio').value, parentNote:document.getElementById('sp-parent-note').value, phone:JSON.stringify(ps), dob:document.getElementById('sp-dob').value, school:document.getElementById('sp-school').value, medical:document.getElementById('sp-medical').value}; app.run.withSuccessHandler(r=>{ hideLoading(); showToast(r.msg); fetchData(); }).updateStudentProfile(d);
   }
   function addStudent(){ let n=document.getElementById('new-name').value; if(n) app.run.withSuccessHandler(fetchData).addStudent(n); }
-  function toggleDark(){ document.body.classList.toggle('dark-mode'); toggleSidebar(); }
+  function toggleDark(){
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('charshanbeDarkMode', isDark ? '1' : '0');
+    toggleSidebar();
+  }
   function openPlanModal(){ document.getElementById('p-id').value=""; document.getElementById('modules-container').innerHTML=""; document.getElementById('plan-modal').style.display='flex'; }
 
   function editPlan(id){
@@ -4119,7 +4147,7 @@ function callApi(action, args, success, failure) {
   function renderAlerts(){
     const box=document.getElementById('alerts-list'); if(!box) return;
     const alerts=getVisibleAlerts();
-    box.innerHTML = alerts.length ? alerts.map(a=>`<div class="alert-card ${a.level}" style="position:relative; padding-left:46px;"><button onclick="dismissAlert('${a.id || `${a.title}:${a.text}`}')" title="دیگر نمایش نده" style="position:absolute; left:12px; top:12px; width:28px; height:28px; border:0; border-radius:50%; background:#f1f5f9; color:#64748b; cursor:pointer; font-size:1.1rem;">×</button><b>${a.title}</b><br><span>${a.text}</span></div>`).join('') : '<p style="opacity:.65;text-align:center;">فعلاً هشدار مهمی ثبت نشده است.</p>';
+    box.innerHTML = alerts.length ? alerts.map(a=>`<div class="alert-card ${a.level}" style="position:relative; padding-left:46px;"><button onclick="dismissAlert('${a.id || `${a.title}:${a.text}`}')" title="دیگر نمایش نده" aria-label="بستن هشدار" style="position:absolute; left:12px; top:12px; width:28px; height:28px; border:0; border-radius:50%; background:#f1f5f9; color:#64748b; cursor:pointer; font-size:1.1rem;">×</button><b>${a.title}</b><br><span>${a.text}</span></div>`).join('') : '<p style="opacity:.65;text-align:center;">فعلاً هشدار مهمی ثبت نشده است.</p>';
   }
   function runGlobalSearch(q){
     const out=document.getElementById('global-search-results'); if(!out) return;
