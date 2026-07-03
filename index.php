@@ -163,8 +163,6 @@ class Chart {
     .fa-info-circle::before { content: "ℹ"; } .fa-exclamation-circle::before, .fa-exclamation-triangle::before { content: "⚠"; }
     .fa-question-circle::before { content: "؟"; } .fa-search::before { content: "🔎"; } .fa-arrow-right::before { content: "→"; }
 
-    :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --border: #e2e8f0; --success: #10b981; --danger: #ef4444; }
-    body.dark-mode { --primary: #6366f1; --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --border: #334155; }
 
     html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
     body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; -moz-font-feature-settings: "ss01"; -webkit-font-feature-settings: "ss01"; font-feature-settings: "ss01"; }
@@ -510,6 +508,7 @@ class Chart {
       --primary:#12335f;
       --accent:#c47b26;
       --accent2:#0f766e;
+      --success: #10b981;
       --danger:#c63d4c;
       --bg:#f5ead3;
       --card-bg:rgba(255,250,238,.84);
@@ -802,24 +801,6 @@ class Chart {
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; }
     }
-    body.dark-mode {
-      --bg:#0f172a;
-      --card-bg:#182238;
-      --text:#f7ecd2;
-      --border:rgba(255,255,255,.12);
-      background:radial-gradient(circle at 10% 5%,rgba(196,123,38,.22),transparent 20rem),linear-gradient(135deg,#08111f,#172238 56%,#2a2117) !important;
-    }
-    body.dark-mode .card, body.dark-mode .modal-box, body.dark-mode .confirm-box, body.dark-mode .sidebar {
-      background:linear-gradient(145deg,rgba(24,34,56,.88),rgba(26,30,40,.76)) !important;
-      color:#f7ecd2;
-      border-color:rgba(255,255,255,.12) !important;
-    }
-    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-      background:rgba(8,17,31,.58) !important;
-      color:#fff9ea;
-      border-color:rgba(255,255,255,.14) !important;
-    }
-    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .sidebar h2 { color:#fff3d5 !important; }
 
 
     @media print {
@@ -1665,7 +1646,7 @@ class Chart {
       --elite-blue: #0e4c81;
       --elite-teal: #087f78;
       --elite-gold: #d99b2b;
-      --elite-cream: #fff4d6;
+      --elite-cream: #f1f5f9;
       --elite-paper: rgba(255, 250, 235, .78);
       --elite-glass: rgba(255, 255, 255, .58);
       --elite-line: rgba(255, 255, 255, .62);
@@ -1995,7 +1976,7 @@ class Chart {
 
     body.dark-mode {
       --bg: #08111f;
-      --text: #fff4d6;
+      --text: #f1f5f9;
       --border: rgba(255,255,255,.12);
       background:
         radial-gradient(circle at var(--spot-x, 18%) var(--spot-y, 8%), rgba(217,155,43,.23), transparent 19rem),
@@ -2005,13 +1986,13 @@ class Chart {
     body.dark-mode .card, body.dark-mode .modal-box, body.dark-mode .confirm-box, body.dark-mode .sidebar {
       background: linear-gradient(145deg, rgba(14,27,51,.82), rgba(25,25,27,.70)) !important;
       border-color: rgba(255,255,255,.13) !important;
-      color: #fff4d6 !important;
+      color: #f1f5f9 !important;
     }
     body.dark-mode .dash-item, body.dark-mode .student-row, body.dark-mode .archive-item, body.dark-mode .calendar-item, body.dark-mode .note-head, body.dark-mode .acc-card, body.dark-mode .plan-card, body.dark-mode .search-result, body.dark-mode .alert-card {
       background: linear-gradient(145deg, rgba(22,36,62,.72), rgba(31,31,31,.54)) !important;
       border-color: rgba(255,255,255,.12) !important;
     }
-    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .modal-box h3, body.dark-mode .sidebar h2 { color: #fff0c5 !important; }
+    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .modal-box h3, body.dark-mode .sidebar h2 { color: #ffffff !important; }
     body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
       background: rgba(7,14,26,.72) !important;
       color: #fff9ea !important;
