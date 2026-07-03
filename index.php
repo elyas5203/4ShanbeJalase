@@ -1998,6 +1998,10 @@ class Chart {
       color: #fff9ea !important;
       border-color: rgba(255,255,255,.14) !important;
     }
+    body.dark-mode label { color: #f1f5f9 !important; }
+    body.dark-mode .plan-body, body.dark-mode .acc-body, body.dark-mode .note-body { color: #f1f5f9 !important; background: rgba(255,255,255,0.05) !important; }
+    body.dark-mode .dash-item b, body.dark-mode .dash-item span, body.dark-mode .student-row b { color: #f1f5f9 !important; }
+    body.dark-mode .attendance-session-head b { color: #ffffff !important; }
 
     @media print {
       body { background: #fff !important; }
@@ -2987,6 +2991,8 @@ class Chart {
           </div>
           <label>ملاحظات پزشکی / خاص:</label><input type="text" id="sp-medical">
           <button class="btn btn-green" onclick="saveProfile()" style="margin-top:15px;">💾 ذخیره پروفایل</button>
+          <hr style="opacity:0.1; margin:20px 0;">
+          <button class="btn btn-red" onclick="askDeleteStudent()" style="background:linear-gradient(135deg,#861f35,#c93445) !important; opacity:0.9;">🗑️ حذف کامل این متربی</button>
         </div>
       </div>
       <div id="tab-mi" class="tab-content">
@@ -3848,6 +3854,22 @@ function callApi(action, args, success, failure) {
         fetchData();
       })
       .catch(err => { hideLoading(); showAlert(err.message, 'error'); });
+  }
+
+  function askDeleteStudent() {
+    if(!currentStudent) return;
+    showConfirm(`آیا از حذف کامل "${currentStudent}" اطمینان دارید؟\nاین عمل غیرقابل بازگشت است و تمامی سوابق حضور، امتیازات و یادداشت‌های مربوطه برای همیشه پاک خواهد شد.`, () => {
+      showLoading();
+      app.run.withSuccessHandler(r => {
+        hideLoading();
+        showToast(r.msg);
+        nav('profiles');
+        fetchData();
+      }).withFailureHandler(e => {
+        hideLoading();
+        showAlert(e.message, 'error');
+      }).deleteStudent(currentStudent);
+    });
   }
 
   function saveProfile(){
