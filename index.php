@@ -164,7 +164,6 @@ class Chart {
     .fa-question-circle::before { content: "؟"; } .fa-search::before { content: "🔎"; } .fa-arrow-right::before { content: "→"; }
 
     :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --border: #e2e8f0; --success: #10b981; --danger: #ef4444; }
-    body.dark-mode { --primary: #6366f1; --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --border: #334155; }
 
     html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
     body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; -moz-font-feature-settings: "ss01"; -webkit-font-feature-settings: "ss01"; font-feature-settings: "ss01"; }
@@ -802,27 +801,6 @@ class Chart {
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; }
     }
-    body.dark-mode {
-      --bg:#0f172a;
-      --card-bg:#182238;
-      --text:#f7ecd2;
-      --border:rgba(255,255,255,.12);
-      background:radial-gradient(circle at 10% 5%,rgba(196,123,38,.22),transparent 20rem),linear-gradient(135deg,#08111f,#172238 56%,#2a2117) !important;
-    }
-    body.dark-mode .card, body.dark-mode .modal-box, body.dark-mode .confirm-box, body.dark-mode .sidebar {
-      background:linear-gradient(145deg,rgba(24,34,56,.88),rgba(26,30,40,.76)) !important;
-      color:#f7ecd2;
-      border-color:rgba(255,255,255,.12) !important;
-    }
-    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-      background:rgba(8,17,31,.58) !important;
-      color:#fff9ea;
-      border-color:rgba(255,255,255,.14) !important;
-    }
-    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .sidebar h2 { color:#fff3d5 !important; }
-
-
-    @media print {
       body { background: white !important; padding: 0 !important; margin: 0 !important; }
       .header, .bottom-nav, .sidebar, .sidebar-overlay, .fab, .container, .modal, #confirm-modal, #lightbox, #prompt-modal { display: none !important; }
       #report-modal { display: block !important; position: static !important; background: white !important; padding: 0 !important; margin: 0 !important; visibility: visible !important; }
@@ -1993,33 +1971,6 @@ class Chart {
       .modal { align-items: flex-end !important; }
     }
 
-    body.dark-mode {
-      --bg: #08111f;
-      --text: #fff4d6;
-      --border: rgba(255,255,255,.12);
-      background:
-        radial-gradient(circle at var(--spot-x, 18%) var(--spot-y, 8%), rgba(217,155,43,.23), transparent 19rem),
-        radial-gradient(circle at 92% 5%, rgba(8,127,120,.18), transparent 24rem),
-        linear-gradient(132deg, #050914 0%, #0b1930 54%, #21180e 100%) !important;
-    }
-    body.dark-mode .card, body.dark-mode .modal-box, body.dark-mode .confirm-box, body.dark-mode .sidebar {
-      background: linear-gradient(145deg, rgba(14,27,51,.82), rgba(25,25,27,.70)) !important;
-      border-color: rgba(255,255,255,.13) !important;
-      color: #fff4d6 !important;
-    }
-    body.dark-mode .dash-item, body.dark-mode .student-row, body.dark-mode .archive-item, body.dark-mode .calendar-item, body.dark-mode .note-head, body.dark-mode .acc-card, body.dark-mode .plan-card, body.dark-mode .search-result, body.dark-mode .alert-card {
-      background: linear-gradient(145deg, rgba(22,36,62,.72), rgba(31,31,31,.54)) !important;
-      border-color: rgba(255,255,255,.12) !important;
-    }
-    body.dark-mode .section-title, body.dark-mode .card > h3, body.dark-mode .modal-box h3, body.dark-mode .sidebar h2 { color: #fff0c5 !important; }
-    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-      background: rgba(7,14,26,.72) !important;
-      color: #fff9ea !important;
-      border-color: rgba(255,255,255,.14) !important;
-    }
-
-    @media print {
-      body { background: #fff !important; }
       .card, .modal-box, .confirm-box { box-shadow: none !important; backdrop-filter: none !important; }
     }
 
@@ -2893,7 +2844,6 @@ class Chart {
     <div class="menu-item" onclick="nav('score')"><i class="fas fa-star-half-alt"></i> امتیازدهی</div>
     <div class="menu-item" onclick="nav('notes')"><i class="fas fa-pen-nib"></i> یادداشت‌ها</div>
     <div class="menu-item" onclick="nav('settings')"><i class="fas fa-user-cog"></i> تنظیمات</div>
-    <div class="menu-item" onclick="toggleDark()" style="margin-top:auto;"><i class="fas fa-moon"></i> حالت شب</div>
   </div>
 
   <div class="container">
@@ -3850,7 +3800,6 @@ function callApi(action, args, success, failure) {
     showLoading(); const d={originalName:currentStudent, image:document.getElementById('sp-input-img').value, bio:document.getElementById('sp-bio').value, parentNote:document.getElementById('sp-parent-note').value, phone:JSON.stringify(ps), dob:document.getElementById('sp-dob').value, school:document.getElementById('sp-school').value, medical:document.getElementById('sp-medical').value}; app.run.withSuccessHandler(r=>{ hideLoading(); showToast(r.msg); fetchData(); }).updateStudentProfile(d);
   }
   function addStudent(){ let n=document.getElementById('new-name').value; if(n) app.run.withSuccessHandler(fetchData).addStudent(n); }
-  function toggleDark(){ document.body.classList.toggle('dark-mode'); toggleSidebar(); }
   function openPlanModal(){ document.getElementById('p-id').value=""; document.getElementById('modules-container').innerHTML=""; document.getElementById('plan-modal').style.display='flex'; }
 
   function editPlan(id){
