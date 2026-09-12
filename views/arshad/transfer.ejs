@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم انتقال امن سایبری</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --primary: #e4c491;
+            --dark: #1b1d1c;
+            --darker: #0a0b0a;
+            --accent: #00ffff;
+            --accent2: #ff0080;
+            --accent3: #00ff88;
+            --neon-glow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+            --pink-glow: 0 0 10px var(--accent2), 0 0 20px var(--accent2);
+            --green-glow: 0 0 10px var(--accent3), 0 0 20px var(--accent3);
+            --gold-glow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--primary);
+            overflow: hidden;
+            height: 100vh;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .cyber-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            grid-template-rows: 80px 1fr 80px;
+            gap: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(27, 29, 28, 0.3) 0%, rgba(10, 11, 10, 0.95) 70%);
+            overflow: hidden;
+        }
+        
+        .cyber-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            background: rgba(10, 11, 10, 0.9);
+            border-bottom: 1px solid var(--primary);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+            z-index: 20;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 2px;
+            position: relative;
+            box-shadow: var(--gold-glow);
+            transform: rotate(45deg);
+        }
+        
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 20px;
+            height: 20px;
+            background: var(--dark);
+            border-radius: 1px;
+        }
+        
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary);
+            text-shadow: var(--gold-glow);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .status-indicators {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent3);
+            box-shadow: 0 0 8px var(--accent3);
+        }
+        
+        .main-content {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .cyber-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+            color: var(--primary);
+            text-shadow: var(--gold-glow);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .cyber-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .progress-section {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 15px rgba(228, 196, 145, 0.2);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--dark), var(--primary), var(--accent), var(--primary), var(--dark));
+            background-size: 200% 100%;
+            animation: progress-glow 2s infinite linear;
+            transition: width 0.5s ease-out;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progress-shine 2s infinite;
+        }
+        
+        @keyframes progress-glow {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .status-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .status-title {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+            text-shadow: 0 0 5px var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-title::before {
+            content: '▶';
+            font-size: 0.7rem;
+            color: var(--accent3);
+        }
+        
+        .status-list {
+            list-style: none;
+        }
+        
+        .status-item {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(228, 196, 145, 0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-value {
+            color: var(--accent3);
+        }
+        
+        .side-panel {
+            background: rgba(10, 11, 10, 0.8);
+            border-left: 1px solid var(--primary);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .terminal-container {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent3);
+            height: 300px;
+            overflow: hidden;
+            flex: 1;
+        }
+        
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .terminal-line::before {
+            content: '> ';
+            color: var(--accent2);
+        }
+        
+        .data-stats {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .stats-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            text-shadow: 0 0 5px var(--accent);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent3);
+        }
+        
+        .cyber-footer {
+            grid-column: 1 / -1;
+            background: rgba(10, 11, 10, 0.9);
+            border-top: 1px solid var(--primary);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .encryption-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .encryption-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--accent3);
+            border-radius: 2px;
+            position: relative;
+            box-shadow: 0 0 10px var(--accent3);
+            transform: rotate(45deg);
+        }
+        
+        .encryption-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 15px;
+            height: 15px;
+            background: var(--darker);
+            border-radius: 1px;
+        }
+        
+        .live-feed {
+            flex: 1;
+            margin: 0 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        
+        .data-stream {
+            white-space: nowrap;
+            animation: data-flow 20s linear infinite;
+        }
+        
+        @keyframes data-flow {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .timer {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .background-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .cyber-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(228, 196, 145, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(228, 196, 145, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: grid-move 30s linear infinite;
+        }
+        
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        .data-nodes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .data-node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+            opacity: 0;
+            animation: node-pulse 4s infinite;
+        }
+        
+        @keyframes node-pulse {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            transform-origin: left center;
+            opacity: 0.2;
+        }
+        
+        .scan-line-bg {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            top: 0;
+            left: 0;
+            opacity: 0;
+            animation: scan 8s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+        
+        .hexagon {
+            width: 60px;
+            height: 35px;
+            background: transparent;
+        }
+        
+        .hexagon::before, .hexagon::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+        }
+        
+        .hexagon::before {
+            bottom: 100%;
+            border-bottom: 17.5px solid var(--primary);
+        }
+        
+        .hexagon::after {
+            top: 100%;
+            border-top: 17.5px solid var(--primary);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-container">
+        <header class="cyber-header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <div class="logo-text">CYBER-TRANSFER</div>
+            </div>
+            <div class="status-indicators">
+                <div class="indicator">
+                    <div class="indicator-dot"></div>
+                    <span>ENCRYPTION ACTIVE</span>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-dot" style="background: var(--accent); box-shadow: 0 0 8px var(--accent);"></div>
+                    <span>CONNECTION SECURE</span>
+                </div>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <div class="title-section">
+                <h1 class="cyber-title">سیستم انتقال امن سایبری</h1>
+                <div class="cyber-subtitle">برقراری ارتباط رمزنگاری شده سطح ۵</div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>پیشرفت انتقال</span>
+                    <span id="progressPercent">25%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h3 class="status-title">وضعیت سیستم</h3>
+                        <ul class="status-list">
+                            <li class="status-item">
+                                <span>پروتکل رمزنگاری</span>
+                                <span class="status-value">AES-512</span>
+                            </li>
+                            <li class="status-item">
+                                <span>وضعیت کانال</span>
+                                <span class="status-value">ایجاد شده</span>
+                            </li>
+                            <li class="status-item">
+                                <span>یکپارچگی داده</span>
+                                <span class="status-value">تأیید شده</span>
+                            </li>
+                            <li class="status-item">
+                                <span>احراز هویت</span>
+                                <span class="status-value">تکمیل شد</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="status-card">
+                        <h3 class="status-title">آمار انتقال</h3>
+                        <ul class="status-list">
+                            <li class="status-item">
+                                <span>داده منتقل شده</span>
+                                <span class="status-value" id="dataTransferred">125 MB</span>
+                            </li>
+                            <li class="status-item">
+                                <span>سرعت انتقال</span>
+                                <span class="status-value" id="transferRate">1.8 GB/s</span>
+                            </li>
+                            <li class="status-item">
+                                <span>زمان باقیمانده</span>
+                                <span class="status-value" id="timeRemaining">00:22</span>
+                            </li>
+                            <li class="status-item">
+                                <span>سطح امنیت</span>
+                                <span class="status-value" id="securityLevel">99.7%</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="side-panel">
+            <div class="terminal-container" id="terminalContainer">
+                <div class="terminal-line">INITIATING ENCRYPTION PROTOCOL</div>
+                <div class="terminal-line">CONNECTION: SECURE_CHANNEL_ESTABLISHED</div>
+                <div class="terminal-line">ENCRYPTION: AES-512_ACTIVE</div>
+                <div class="terminal-line">DATA_INTEGRITY: VERIFIED</div>
+                <div class="terminal-line">AUTHENTICATION: COMPLETE</div>
+                <div class="terminal-line">TRANSFER_INITIATED</div>
+            </div>
+            
+            <div class="data-stats">
+                <h3 class="stats-title">داده‌های زنده</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">پکت‌های ارسالی</div>
+                        <div class="stat-value" id="packetsSent">12,458</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">پکت‌های دریافتی</div>
+                        <div class="stat-value" id="packetsReceived">12,458</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">تأخیر شبکه</div>
+                        <div class="stat-value" id="networkLatency">18ms</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">خطاها</div>
+                        <div class="stat-value" id="errors">0</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <footer class="cyber-footer">
+            <div class="encryption-status">
+                <div class="encryption-icon"></div>
+                <span>رمزنگاری فعال - سطح ۵</span>
+            </div>
+            
+            <div class="live-feed">
+                <div class="data-stream">
+                    SECURE_DATA_STREAM_ACTIVE • ENCRYPTION_LEVEL_MAX • DATA_INTEGRITY_100% • TRANSFER_RATE_OPTIMAL • SECURE_CONNECTION_ESTABLISHED • 
+                </div>
+            </div>
+            
+            <div class="timer" id="timer">00:25</div>
+        </footer>
+        
+        <div class="background-effects">
+            <div class="cyber-grid"></div>
+            <div class="data-nodes" id="dataNodes"></div>
+            <div class="scan-line-bg"></div>
+            
+            <div class="floating-element" style="top: 20%; left: 15%;">
+                <div class="hexagon"></div>
+            </div>
+            <div class="floating-element" style="top: 60%; left: 80%; animation-delay: -5s;">
+                <div class="hexagon"></div>
+            </div>
+            <div class="floating-element" style="top: 40%; left: 70%; animation-delay: -10s;">
+                <div class="hexagon"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createDataNetwork() {
+            const dataNodes = document.getElementById('dataNodes');
+            const nodeCount = 25;
+            const nodes = [];
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'data-node';
+                node.style.left = `${Math.random() * 100}%`;
+                node.style.top = `${Math.random() * 100}%`;
+                node.style.animationDelay = `${Math.random() * 4}s`;
+                node.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                dataNodes.appendChild(node);
+                nodes.push(node);
+            }
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < Math.min(i + 3, nodeCount); j++) {
+                    if (Math.random() > 0.7) {
+                        createConnectionLine(nodes[i], nodes[j]);
+                    }
+                }
+            }
+        }
+        
+        function createConnectionLine(node1, node2) {
+            const line = document.createElement('div');
+            line.className = 'connection-line';
+            const x1 = parseFloat(node1.style.left) / 100 * window.innerWidth;
+            const y1 = parseFloat(node1.style.top) / 100 * window.innerHeight;
+            const x2 = parseFloat(node2.style.left) / 100 * window.innerWidth;
+            const y2 = parseFloat(node2.style.top) / 100 * window.innerHeight;
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            line.style.width = `${length}px`;
+            line.style.left = `${x1}px`;
+            line.style.top = `${y1}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            line.style.opacity = Math.random() * 0.2 + 0.1;
+            document.getElementById('dataNodes').appendChild(line);
+        }
+        
+        function simulateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const timer = document.getElementById('timer');
+            const dataTransferred = document.getElementById('dataTransferred');
+            const timeRemaining = document.getElementById('timeRemaining');
+            const securityLevel = document.getElementById('securityLevel');
+            const transferRate = document.getElementById('transferRate');
+            const packetsSent = document.getElementById('packetsSent');
+            const packetsReceived = document.getElementById('packetsReceived');
+            const networkLatency = document.getElementById('networkLatency');
+            const terminalContainer = document.getElementById('terminalContainer');
+            
+            let progress = 0;
+            let seconds = 25;
+            let transferred = 0;
+            let totalData = 500;
+            let sentPackets = 0;
+            let receivedPackets = 0;
+            
+            const timerInterval = setInterval(() => {
+                seconds--;
+                if (seconds < 0) seconds = 0;
+                timer.textContent = `00:${seconds.toString().padStart(2, '0')}`;
+                timeRemaining.textContent = `00:${seconds.toString().padStart(2, '0')}`;
+                if (seconds === 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+            
+            const progressInterval = setInterval(() => {
+                progress += 0.4;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${Math.round(progress)}%`;
+                transferred = Math.round(totalData * progress / 100);
+                dataTransferred.textContent = `${transferred} MB`;
+                securityLevel.textContent = `${(99.5 + progress / 200).toFixed(1)}%`;
+                transferRate.textContent = `${(1.5 + progress / 100).toFixed(1)} GB/s`;
+                sentPackets += Math.floor(Math.random() * 10);
+                receivedPackets = sentPackets - Math.floor(Math.random() * 3);
+                packetsSent.textContent = sentPackets.toLocaleString();
+                packetsReceived.textContent = receivedPackets.toLocaleString();
+                networkLatency.textContent = `${Math.floor(20 - progress / 5)}ms`;
+                if (progress % 15 < 0.5) {
+                    addTerminalLine(`DATA_BLOCK_${Math.floor(progress/5)}_TRANSFERRED`);
+                }
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    clearInterval(timerInterval);
+                    addTerminalLine("TRANSFER_COMPLETE");
+                    setTimeout(() => {
+                        window.location.href = '/terminal-arshad/<%= userId %>';
+                    }, 2000);
+                }
+            }, 100);
+            
+            function addTerminalLine(text) {
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                line.textContent = text;
+                terminalContainer.appendChild(line);
+                terminalContainer.scrollTop = terminalContainer.scrollHeight;
+                if (terminalContainer.children.length > 10) {
+                    terminalContainer.removeChild(terminalContainer.children[0]);
+                }
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            createDataNetwork();
+            simulateProgress();
+        });
+        
+        window.addEventListener('resize', () => {
+            document.getElementById('dataNodes').innerHTML = '';
+            createDataNetwork();
+        });
+    </script>
+</body>
+</html>

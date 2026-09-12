@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ترمینال اطلاعاتی سینمایی - کارآگاهی</title>
+    
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #1b1d1c;
+            --fg: #f6e2c2;
+            --accent: #e4c491;
+            --dim: rgba(228,196,145,0.35);
+            --hud: rgba(228,196,145,0.12);
+            --scanline: rgba(228,196,145,0.06);
+            --glow: rgba(228,196,145,0.55);
+            --terminal-bg: #141412;
+            --widget-bg: #211f1a;
+        }
+
+        @font-face {
+            font-family: "Terminal";
+            src: local("Consolas"), local("Menlo"), local("Monaco");
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: radial-gradient(1200px 800px at 50% 50%, #26231c 0%, #1b1d1c 45%, #11110f 100%);
+            color: var(--fg);
+            font-family: Terminal, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            letter-spacing: 0.3px;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* افکت CRT و اسکن‌لاین */
+        .screen::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(to bottom,
+                    transparent 0px, transparent 2px,
+                    var(--scanline) 2px, var(--scanline) 3px),
+                radial-gradient(200% 200% at 50% 50%, transparent 0%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.35) 100%);
+            mix-blend-mode: screen;
+            animation: flicker 4.5s ease-in-out infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 0.35; }
+            10% { opacity: 0.38; }
+            20% { opacity: 0.33; }
+            30% { opacity: 0.40; }
+            45% { opacity: 0.36; }
+            60% { opacity: 0.39; }
+            75% { opacity: 0.34; }
+        }
+
+        /* افکت کروماتیک */
+        .chromatic {
+            text-shadow:
+                0 0 0 rgba(0,0,0,0),
+                0 0 12px rgba(84,255,189,0.08),
+                1px 0 0 rgba(255,0,80,0.08),
+                -1px 0 0 rgba(0,180,255,0.08);
+        }
+
+        /* ویجت‌های HUD شناور */
+        .hud {
+            position: absolute;
+            color: var(--accent);
+            opacity: 0.85;
+            font-size: 13px;
+            text-transform: uppercase;
+            backdrop-filter: blur(2px);
+            border: 1px solid var(--hud);
+            background: linear-gradient(to bottom, rgba(10,15,20,0.35), rgba(10,15,20,0.15));
+            box-shadow: 0 0 20px rgba(84,255,189,0.08), inset 0 0 8px rgba(84,255,189,0.08);
+        }
+
+        .hud .title {
+            font-size: 11px;
+            opacity: 0.8;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed var(--hud);
+            padding: 6px 8px;
+        }
+
+        .hud .content {
+            padding: 8px 10px;
+        }
+
+        .hud small {
+            color: #a6ffe0;
+            opacity: 0.6;
+        }
+
+        /* موقعیت‌های HUD */
+        .hud.status {
+            top: 24px;
+            left: 24px;
+            width: 280px;
+        }
+
+        .hud.clock {
+            top: 24px;
+            right: 24px;
+            width: 280px;
+        }
+
+        .hud.network {
+            bottom: 200px;
+            right: 24px;
+            width: 300px;
+        }
+
+        /* انیمیشن شناور */
+        .drift {
+            animation: drift 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(0,0,0); }
+            to { transform: translate3d(0px, -3px, 0); }
+        }
+
+        /* منطقه ترمینال */
+        .terminal-area {
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            top: 120px;
+            bottom: 80px;
+            border: 1px solid var(--hud);
+            background: rgba(6,10,14,0.5);
+            box-shadow: 0 0 18px rgba(84,255,189,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--hud);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            background: rgba(84,255,189,0.05);
+        }
+
+        .terminal-output {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* خطوط ترمینال */
+        .terminal-line {
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: lineAppear 0.6s ease-out forwards;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        @keyframes lineAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .terminal-line.user {
+            color: #a6ffe0;
+            text-align: right;
+        }
+
+        .terminal-line.admin {
+            color: var(--accent);
+        }
+
+        .terminal-line.system {
+            color: var(--dim);
+            font-style: italic;
+        }
+
+        /* ویجت‌های تعاملی */
+        .widget {
+            margin: 12px 0;
+            border: 1px solid var(--hud);
+            background: var(--widget-bg);
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(84,255,189,0.05), inset 0 0 24px rgba(84,255,189,0.06);
+            transition: box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .widget:hover {
+            box-shadow: 0 0 24px var(--glow), inset 0 0 24px rgba(84,255,189,0.15);
+            filter: saturate(1.1);
+        }
+
+        /* ویجت تصویر */
+        .image-widget {
+            position: relative;
+            max-width: 400px;
+        }
+
+        .image-widget img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0.95;
+        }
+
+        .widget-scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(to bottom, 
+                rgba(255,255,255,0.02) 0px, 
+                rgba(255,255,255,0.02) 2px, 
+                transparent 2px, 
+                transparent 4px);
+            mix-blend-mode: overlay;
+            animation: scanMove 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(-10%); opacity: 0.3; }
+            50% { opacity: 0.45; }
+            100% { transform: translateY(10%); opacity: 0.3; }
+        }
+
+        .face-detection {
+            position: absolute;
+            border: 2px dashed var(--accent);
+            width: 28%;
+            height: 34%;
+            top: 24%;
+            left: 58%;
+            box-shadow: 0 0 24px rgba(84,255,189,0.25);
+            animation: boxPulse 1.8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes boxPulse {
+            0%, 100% { box-shadow: 0 0 18px rgba(84,255,189,0.25); }
+            50% { box-shadow: 0 0 28px rgba(84,255,189,0.45); }
+        }
+
+        .widget-overlay {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(6,10,14,0.7);
+            border: 1px solid var(--hud);
+            padding: 4px 8px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: textFade 4s ease-in-out infinite;
+        }
+
+        @keyframes textFade {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* ویجت صدا */
+        .audio-widget {
+            min-height: 120px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .audio-header {
+            padding: 8px 10px;
+            border-bottom: 1px dashed var(--hud);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 8px;
+            padding: 6px 10px;
+            align-items: center;
+        }
+
+        .audio-btn {
+            border: 1px solid var(--hud);
+            background: rgba(84,255,189,0.1);
+            color: var(--fg);
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .audio-btn:hover {
+            background: rgba(84,255,189,0.2);
+            box-shadow: 0 0 8px rgba(84,255,189,0.3);
+        }
+
+        .audio-canvas {
+            width: 100%;
+            height: 80px;
+            background: rgba(255,255,255,0.02);
+            display: block;
+        }
+
+        /* متن رمزگشایی */
+        .scramble-text {
+            font-size: 16px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 18px rgba(84,255,189,0.08);
+            color: var(--accent);
+            animation: scrambleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes scrambleGlow {
+            0%, 100% { text-shadow: 0 0 18px rgba(84,255,189,0.08); }
+            50% { text-shadow: 0 0 25px rgba(84,255,189,0.15); }
+        }
+
+        /* کنسول ورودی */
+        .console {
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: 24px;
+            border: 1px solid var(--hud);
+            background: rgba(6,10,14,0.5);
+            padding: 12px 14px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 0 18px rgba(84,255,189,0.08);
+        }
+
+        .prompt {
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .input-area {
+            position: relative;
+            min-height: 22px;
+        }
+
+        .message-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--fg);
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+            min-height: 22px;
+            max-height: 100px;
+        }
+
+        .message-input::placeholder {
+            color: var(--dim);
+        }
+
+        .caret {
+            display: inline-block;
+            width: 10px;
+            height: 16px;
+            background: var(--accent);
+            margin-left: 6px;
+            vertical-align: middle;
+            animation: blink 1s steps(1, end) infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .console-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .console-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--hud);
+            background: rgba(84,255,189,0.1);
+            color: var(--fg);
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .console-btn:hover {
+            background: rgba(84,255,189,0.2);
+            box-shadow: 0 0 12px rgba(84,255,189,0.3);
+        }
+
+        /* مودال تصاویر */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 30px var(--glow);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: var(--accent);
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px #ff6b6b;
+        }
+
+        /* اسکرول بار سفارشی */
+        .terminal-output::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .terminal-output::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-output::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            opacity: 0.7;
+        }
+
+        .terminal-output::-webkit-scrollbar-thumb:hover {
+            background: rgba(84,255,189,0.8);
+        }
+
+        /* پاسخگویی موبایل */
+        @media (max-width: 768px) {
+            .hud {
+                font-size: 11px;
+                width: auto !important;
+            }
+            
+            .hud.status {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+            
+            .hud.clock {
+                top: 80px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+            
+            .hud.network {
+                display: none;
+            }
+            
+            .terminal-area {
+                left: 10px;
+                right: 10px;
+                top: 150px;
+                bottom: 70px;
+            }
+            
+            .console {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                grid-template-columns: auto 1fr;
+                gap: 8px;
+            }
+            
+            .console-actions {
+                grid-column: 1 / -1;
+                justify-content: center;
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen chromatic">
+        <!-- HUD شناور -->
+        <div class="hud status drift">
+            <div class="title">وضعیت سیستم</div>
+            <div class="content">
+                <div><small>احراز هویت:</small> تایید شده</div>
+                <div><small>کانال:</small> SEC-ALPHA</div>
+                <div><small>فرآیند:</small> TRACE-29 فعال</div>
+                <div><small>کاربر:</small> <%= username %></div>
+            </div>
+        </div>
+
+        <div class="hud clock drift">
+            <div class="title">ساعت جهانی</div>
+            <div class="content">
+                <div><small>UTC:</small> <span id="utc"></span></div>
+                <div><small>تهران:</small> <span id="tehran"></span></div>
+                <div><small>برلین:</small> <span id="berlin"></span></div>
+                <div style="margin-top:6px; opacity:0.7;">
+                    <small>همگام‌سازی:</small> <span id="sync">OK</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud network drift">
+            <div class="title">شبکه و اتصال</div>
+            <div class="content">
+                <div><small>وضعیت:</small> <span id="connectionStatus">متصل</span></div>
+                <div><small>تاخیر:</small> <span id="latency">32ms</span></div>
+                <div><small>پهنای باند:</small> <span id="bandwidth">1.2MB/s</span></div>
+            </div>
+        </div>
+
+        <!-- منطقه ترمینال -->
+        <div class="terminal-area">
+            <div class="terminal-header">
+                ترمینال اطلاعاتی - جلسه فعال
+            </div>
+            <div class="terminal-output" id="terminalOutput">
+                <!-- پیام‌ها و ویجت‌ها به صورت داینامیک اضافه می‌شوند -->
+            </div>
+        </div>
+
+        <!-- کنسول ورودی -->
+        <div class="console">
+            <div class="prompt">›</div>
+            <div class="input-area">
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="پیام خود را اینجا بنویسید..."
+                    rows="1"
+                ></textarea>
+            </div>
+            <div class="console-actions">
+                <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt">
+                <button class="console-btn" id="fileBtn">📎 فایل</button>
+                <button class="console-btn" id="sendBtn">ارسال</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تصاویر -->
+    <div class="image-modal" id="imageModal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+
+    <!-- متغیرهای کاربر -->
+    <script>
+        const userId = <%= userId %>;
+        const username = '<%= username %>';
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/game-client.js"></script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+/* public/css/arshad-login-style.css */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #1b1d1c;
+    --text-color: #f6e2c2;
+    --primary-color: #e4c491;
+    --secondary-color: #e4c491;
+    --border-color: rgba(228, 196, 145, 0.35);
+    --scan-line-color: #e4c491;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: radial-gradient(circle at center, #26231c 0%, #1b1d1c 45%, #11110f 100%);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column; /* تغییر برای چیدمان عمودی */
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+/* بخش گرید اعضای تایید شده */
+.team-grid-header {
+    width: 90%;
+    max-width: 800px;
+    text-align: right;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+.team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 90%;
+    max-width: 800px;
+    min-height: 110px; /* فضایی برای حداقل یک ردیف */
+    padding: 0.5rem;
+    background: rgba(17, 24, 39, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.team-member-card {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    overflow: hidden;
+}
+.team-member-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* اصلاح نمایش عکس آپلود شده */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* انیمیشن تایید هویت جدید */
+.validation-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(16, 185, 129, 0.5);
+    opacity: 0;
+    z-index: 1000; /* force above everything in scanner */
+}
+.validation-overlay svg {
+    width: 40px;
+    height: 40px;
+    stroke: white;
+    stroke-width: 4;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+}
+.checkmark {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.checkmark::after {
+    content: '✔';
+    color: var(--bg-color);
+    font-weight: bold;
+}
+
+/* بخش اسکنر */
+.scan-ui-container { width: 90%; max-width: 500px; }
+.scan-header h1 { color: var(--secondary-color); text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+.scan-header p { margin-bottom: 1.5rem; opacity: 0.8; }
+.scanner-window { position: relative; isolation: isolate; width: 100%; aspect-ratio: 16 / 10; background-color: #000; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+#camera-feed {
+    position: absolute; inset: 0; z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* اصلاح نمایش عکس آپلود شده */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.scanner-window img.scanner-preview { position:absolute; inset:0; width:100%; height:100%; object-fit: contain; z-index:1; pointer-events:none; }
+.scanner-window .scan-line {
+    position: absolute;
+    left: 0;
+    top: -10px;
+    width: 100%;
+    height: 16px;
+    background: linear-gradient(180deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.8) 50%, rgba(56,189,248,0) 100%);
+    box-shadow: 0 0 36px rgba(56,189,248,0.35), 0 0 8px rgba(56,189,248,0.25) inset;
+    filter: blur(2px);
+    opacity: 0;
+}
+.scan-corners div { position: absolute; width: 25px; height: 25px; border: 3px solid var(--secondary-color); }
+.scan-corners div:nth-child(1) { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.scan-corners div:nth-child(2) { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.scan-corners div:nth-child(3) { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.scan-corners div:nth-child(4) { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+.controls { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 15px var(--primary-color);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.file-upload { position: relative; }
+#file-uploader { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* New layout helpers */
+.hidden { display: none !important; }
+.panel { background: rgba(17, 24, 39, 0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; }
+.main-panel { width: 90%; max-width: 640px; margin: 0 auto 2rem; display: flex; flex-direction: column; gap: 1rem; }
+.team-grid-container { width: 90%; max-width: 800px; margin: 1rem auto; }
+.team-grid-container > header { text-align: right; margin-bottom: .5rem; font-weight: bold; color: var(--secondary-color); }
+.background-overlay { position: fixed; inset: 0; pointer-events: none; background: radial-gradient( circle at 20% 20%, rgba(56,189,248,.15), transparent 50%), radial-gradient( circle at 80% 30%, rgba(16,185,129,.12), transparent 50%); opacity: .4; }
+
+/* Simple spinner */
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: var(--secondary-color);
+  border-radius: 50%;
+  margin: 8px auto;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Dossier UI */
+.main-container { width: 92%; max-width: 960px; margin: 1.5rem auto; display: flex; flex-direction: column; gap: 1rem; }
+.collected-scans { width: 100%; }
+.collected-scans h3 { text-align: right; margin-bottom: .5rem; color: var(--secondary-color); }
+.scans-gallery { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; background: rgba(17,24,39,0.3); border: 1px solid var(--border-color); border-radius: 8px; min-height: 120px; }
+.scan-thumbnail { width: 100px; height: 100px; border: 2px solid rgba(16,185,129,0.5); border-radius: 6px; overflow: hidden; background: rgba(0,0,0,.3); }
+.scan-thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.submission-panel { display: flex; gap: 10px; align-items: center; }
+.submission-panel input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,.3); color: var(--text-color); }
+.status-panel { text-align: center; }
+
+/* کدهای جدید برای افزودن به انتهای arshad-login-style.css */
+.scan-thumbnail {
+    position: relative;
+}
+.scan-thumbnail .delete-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background: #ff3b3b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.scan-thumbnail.rejected {
+    border-color: #ff3b3b;
+    filter: grayscale(80%);
+}
+
+/* ===== Enhancements: subtle glow and hover effects ===== */
+.scanner-window {
+    box-shadow:
+        0 0 24px rgba(56, 189, 248, 0.20),
+        inset 0 0 30px rgba(56, 189, 248, 0.08);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.scanner-window:hover {
+    box-shadow:
+        0 0 36px rgba(56, 189, 248, 0.32),
+        inset 0 0 36px rgba(56, 189, 248, 0.12);
+    transform: translateY(-1px);
+}
+
+.btn {
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+}
+.btn:hover {
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.team-member-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.team-member-card:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgba(16,185,129,0.25);
+    border-color: rgba(16,185,129,0.75);
+}
+
+#scanned-image-preview {
+    display: block;
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    margin: 0.5rem 0 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 20px rgba(56,189,248,0.15);
+    cursor: zoom-in;
+}
+
+/* ===== V2 Dossier Layout ===== */
+.main-container.v2-auth {
+  width: 92%;
+  max-width: 1100px;
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.panel {
+  background: rgba(17, 24, 39, 0.55);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+.scan-controls { display: flex; gap: 10px; margin-top: 12px; }
+.btn.primary { border-color: var(--secondary-color); color: var(--secondary-color); }
+.btn.primary:hover { box-shadow: 0 0 14px rgba(56,189,248,0.35); background: var(--secondary-color); color: var(--bg-color); }
+.dossier-panel h3 { color: var(--secondary-color); margin-bottom: 8px; }
+.dossier-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 10px; min-height: 110px; padding: 8px; background: rgba(17,24,39,0.3); border: 1px dashed rgba(56,189,248,0.25); border-radius: 10px; }
+.scan-thumbnail { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid rgba(56,189,248,0.2); }
+.scan-thumbnail img { display: block; width: 100%; height: 100px; object-fit: cover; }
+.scan-thumbnail .delete-btn { position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(255,0,0,0.75); color: #fff; font-weight: 700; cursor: pointer; line-height: 22px; text-align: center; }
+.scan-thumbnail.approved { outline: 2px solid #00cc66; }
+.scan-thumbnail.rejected { outline: 2px solid #ff3b3b; filter: grayscale(75%); }
+.submission-section { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px; }
+
+/* Badge وضعیت روی هر عکس */
+.status-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0a0a0a;
+  background: rgba(228,196,145,0.9);
+  border: 1px solid rgba(228,196,145,0.6);
+}
+.status-badge.pending { color: #1d1d1d; background: rgba(232,179,90,0.9); border-color: rgba(232,179,90,0.65); }
+.status-badge.approved { color: #0b1f12; background: rgba(0,204,102,0.9); border-color: rgba(0,204,102,0.65); }
+.status-badge.rejected { color: #2b0909; background: rgba(255,59,59,0.9); border-color: rgba(255,59,59,0.65); }
+
+@media (max-width: 800px) {
+  .main-container.v2-auth { grid-template-columns: 1fr; }
+}
+
+/* ===== GLightbox overrides: full contain and transparent bg ===== */
+.glightbox-container .goverlay { background: rgba(0,0,0,0.92) !important; }
+.glightbox-container,
+.glightbox-container .ginner-container { width:100vw !important; height:100vh !important; background: transparent !important; }
+.glightbox-container .gslide,
+.glightbox-container .gslide-inner-content { width:100% !important; height:100% !important; background: transparent !important; box-shadow: none !important; }
+.glightbox-container .gslide-media,
+.glightbox-container .gslide-image { background: transparent !important; box-shadow: none !important; width:auto !important; height:auto !important; max-width:95vw !important; max-height:90vh !important; margin: 0 auto !important; display:flex !important; align-items:center !important; justify-content:center !important; overflow: visible !important; }
+.glightbox-container .gslide-media img,
+.glightbox-container .gslide-image img { display:block; width:auto !important; height:auto !important; max-width:95vw !important; max-height:90vh !important; object-fit: contain !important; background: transparent !important; }
+.glightbox-open { overflow: hidden; }
+.glightbox-clean .gslide { padding: 0 !important; }
+.glightbox-container .ginner-container { padding: 0 !important; }
+.glightbox-container .gslide-description { display: none !important; }
+
+/* ===== Cyber 3D Scan overlays ===== */
+.scanner-window .fx-grid {
+  position: absolute; inset: 0;
+  pointer-events: none; opacity: .1;
+  background-image:
+    linear-gradient(to right, rgba(0,255,255,0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,255,255,0.12) 1px, transparent 1px);
+  background-size: 22px 22px, 22px 22px;
+  mix-blend-mode: screen;
+  z-index: 2;
+}
+.scanner-window .fx-glow {
+  position: absolute; inset: -10%;
+  pointer-events: none; opacity: .0;
+  background: radial-gradient(ellipse at center, rgba(56,189,248,0.22) 0%, rgba(56,189,248,0.12) 40%, rgba(0,0,0,0) 70%);
+  filter: blur(8px);
+  z-index: 4;
+}
+.scanner-window .fx-scanlines {
+  position: absolute; inset: 0; pointer-events: none; opacity: .2;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px, transparent 2px);
+  mix-blend-mode: soft-light; z-index: 3;
+}
+.scanner-window .fx-vignette {
+  position: absolute; inset: 0; pointer-events:none;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.5) 100%);
+  z-index: 50; /* below scan-line */
+}
+
+/* Glitch overlay for cyber feel */
+@keyframes glitch-shift {
+  0% { transform: translate3d(0,0,0); }
+  20% { transform: translate3d(1px,-1px,0); }
+  40% { transform: translate3d(-1px,1px,0); }
+  60% { transform: translate3d(1px,1px,0); }
+  80% { transform: translate3d(-1px,-1px,0); }
+  100% { transform: translate3d(0,0,0); }
+}
+.scanner-window .fx-glitch {
+  position: absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 0, 150, 0.08) 0,
+    rgba(255, 0, 150, 0.08) 2px,
+    rgba(0, 255, 255, 0.08) 2px,
+    rgba(0, 255, 255, 0.08) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  mix-blend-mode: screen;
+  opacity: .18;
+  filter: saturate(1.1) hue-rotate(6deg);
+  animation: glitch-shift .6s steps(2, end) infinite;
+  z-index: 6;
+}
+
+/* ===== Enhanced scan overlay on thumbnails ===== */
+.scan-thumbnail { position: relative; }
+.scan-thumbnail .scan-overlay { position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:10px; }
+.scan-thumbnail .scan-overlay::before { content:""; position:absolute; left:0; right:0; top:-20%; height:18px; background: linear-gradient(180deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.55) 50%, rgba(56,189,248,0) 100%); box-shadow: 0 0 18px rgba(56,189,248,0.55); filter: blur(0.3px); }
+.scan-thumbnail .scan-overlay::after { content:""; position:absolute; inset:0; background-image: 
+  linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+  linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 14px 14px, 14px 14px;
+  mix-blend-mode: screen;
+}

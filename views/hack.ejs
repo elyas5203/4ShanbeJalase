@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>!!! SYSTEM COMPROMISED !!!</title>
+<link rel="icon" href="/assets/favicon-hacked.ico">
+
+<!-- Three.js for 3D Mask -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<!-- GSAP for animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- Socket.IO for chat -->
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+:root {
+  --bg: #020202;
+  --crt-green: #19ff6a;
+  --alert-red: #ff1e2f;
+  --infect: #b3122e;
+  --accent: #8cffd4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: radial-gradient(1200px 600px at 20% 10%, #0c0f12 0%, #050607 60%, #000 100%);
+  color: #e7f7ef;
+  font-family: "Consolas", "Fira Code", monospace;
+  overflow: hidden;
+  cursor: none;
+}
+
+/* ========== CRT و SCANLINES (پروتوتایپ 1) ========== */
+.stage {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05)) repeat,
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 2px,
+      transparent 3px,
+      transparent 6px
+    );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: scanflow 8s linear infinite;
+}
+
+@keyframes scanflow {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(8px); }
+}
+
+/* ========== 3D CANVAS برای ماسک (پروتوتایپ 3) ========== */
+#threejs-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+#threejs-canvas.visible {
+  opacity: 1;
+}
+
+/* ========== VEINS CANVAS برای ویروس (پروتوتایپ 2) ========== */
+#veins-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  filter: blur(0.6px) contrast(120%);
+  opacity: 0;
+  transition: opacity 3s ease-in-out;
+}
+
+#veins-canvas.active {
+  opacity: 1;
+}
+
+/* ========== UI اولیه ========== */
+.initial-ui {
+  position: absolute;
+  top: 8%;
+  left: 10%;
+  right: 10%;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
+  z-index: 15;
+  transition: all 1s ease;
+}
+
+.panel {
+  position: absolute;
+  bottom: 12%;
+  left: 12%;
+  width: 28%;
+  height: 38%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
+  padding: 16px;
+  overflow: hidden;
+  z-index: 15;
+  transition: all 1s ease;
+}
+
+/* ========== GLITCH EFFECTS (پروتوتایپ 1) ========== */
+.glitch-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255,0,0,0.08) 0 2px,
+    rgba(0,255,0,0.08) 2px 4px,
+    rgba(0,0,255,0.08) 4px 6px
+  );
+  filter: contrast(140%) saturate(140%);
+  z-index: 50;
+}
+
+.glitch-overlay.active {
+  animation: glitchPulse 0.9s ease-in-out infinite;
+  opacity: 1;
+}
+
+@keyframes glitchPulse {
+  0% { opacity: 0; }
+  8% { opacity: 1; transform: translate(-3px, 2px); }
+  18% { transform: translate(4px, -3px); }
+  32% { clip-path: inset(30% 0 0 0); }
+  46% { clip-path: inset(0 0 60% 0); transform: translate(-6px, 1px); }
+  62% { filter: hue-rotate(40deg) contrast(200%); }
+  78% { transform: translate(7px, -2px) scale(1.02); }
+  92% { clip-path: inset(0 0 0 0); }
+  100% { opacity: 1; transform: none; }
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* ========== CORRODE EFFECT (پروتوتایپ 2) ========== */
+.corrode {
+  animation: corrode 5s ease-in forwards;
+}
+
+@keyframes corrode {
+  0% { filter: none; }
+  100% {
+    opacity: 0;
+    transform: translateY(40px) skewX(-6deg);
+    filter: blur(6px);
+  }
+}
+
+/* ========== BLACKOUT ========== */
+.blackout {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 60;
+  transition: opacity 0.3s ease-in;
+}
+
+.blackout.on {
+  opacity: 1;
+}
+
+/* ========== HACKER CHAT ========== */
+.hacker-chat {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.9) 0%,
+    rgba(0,0,0,0.7) 50%,
+    transparent 100%
+  );
+  border-top: 2px solid var(--alert-red);
+  padding: 20px;
+  z-index: 70;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 1s ease;
+}
+
+.hacker-chat.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chat-header {
+  color: var(--alert-red);
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; text-shadow: 0 0 10px var(--alert-red); }
+}
+
+.chat-messages {
+  height: 120px;
+  overflow-y: auto;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.hacker-message {
+  margin-bottom: 8px;
+  color: var(--crt-green);
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.hacker-message.visible {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.5s ease;
+}
+
+/* ========== SCRAMBLE TEXT EFFECT ========== */
+.scramble {
+  position: relative;
+  display: inline-block;
+}
+
+.scramble::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: scramble 0.8s ease-in-out;
+}
+
+@keyframes scramble {
+  0% { content: "████████████████"; }
+  10% { content: "█▓▒░████████████"; }
+  20% { content: "██▓▒░███████████"; }
+  30% { content: "███▓▒░██████████"; }
+  40% { content: "████▓▒░█████████"; }
+  50% { content: "█████▓▒░████████"; }
+  60% { content: "██████▓▒░███████"; }
+  70% { content: "███████▓▒░██████"; }
+  80% { content: "████████▓▒░█████"; }
+  90% { content: "█████████▓▒░████"; }
+  100% { content: attr(data-text); }
+}
+
+/* ========== FINAL MESSAGE ========== */
+.final-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  color: var(--alert-red);
+  font-size: clamp(24px, 6vw, 64px);
+  letter-spacing: 0.08em;
+  text-shadow: 
+    0 0 12px rgba(255,30,47,0.6),
+    0 0 32px rgba(255,30,47,0.4);
+  z-index: 80;
+}
+
+.final-message.on {
+  opacity: 1;
+  transition: opacity 0.4s ease-in 0.2s;
+}
+
+.final-message .subtitle {
+  font-size: 18px;
+  margin-top: 20px;
+  color: var(--crt-green);
+  font-family: "Courier New", monospace;
+}
+</style>
+</head>
+
+<body>
+<div class="stage scanlines">
+  <!-- 3D Canvas for Hacker Mask -->
+  <canvas id="threejs-canvas"></canvas>
+  
+  <!-- Veins Canvas for Virus Effect -->
+  <canvas id="veins-canvas"></canvas>
+  
+  <!-- Initial UI (will be corrupted) -->
+  <div class="initial-ui" id="initialUI">
+    <div>سیستم امنیتی فعال</div>
+    <div>وضعیت: محافظت شده</div>
+    <div>دسترسی: مجاز</div>
+  </div>
+  
+  <div class="panel" id="panel">
+    <h3>پنل کنترل</h3>
+    <p>همه سیستم‌ها عادی</p>
+    <p>فایروال: فعال</p>
+    <p>آنتی‌ویروس: به‌روز</p>
+  </div>
+  
+  <!-- Glitch Overlay -->
+  <div class="glitch-overlay" id="glitchOverlay"></div>
+  
+  <!-- Blackout -->
+  <div class="blackout" id="blackout"></div>
+  
+  <!-- Hacker Chat -->
+  <div class="hacker-chat" id="hackerChat">
+    <div class="chat-header">⚠️ UNAUTHORIZED ACCESS DETECTED ⚠️</div>
+    <div class="chat-messages" id="chatMessages"></div>
+  </div>
+  
+  <!-- Final Message -->
+  <div class="final-message" id="finalMessage">
+    <div>SYSTEM COMPROMISED</div>
+    <div class="subtitle">Your security has been breached...</div>
+  </div>
+</div>
+
+<script>
+// ========== GLOBAL VARIABLES ==========
+let scene, camera, renderer, mask;
+let veinsCanvas, veinsCtx;
+let socket;
+let audioContext, noiseBuffer;
+let sequenceActive = false;
+
+// ========== AUDIO SYSTEM ==========
+function initAudio() {
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create noise buffer
+    const bufferSize = audioContext.sampleRate * 0.5;
+    noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+  } catch (e) {
+    console.log('Audio not supported');
+  }
+}
+
+function playGlitchSound() {
+  if (!audioContext || !noiseBuffer) return;
+  
+  const source = audioContext.createBufferSource();
+  const gainNode = audioContext.createGain();
+  
+  source.buffer = noiseBuffer;
+  source.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+  
+  source.start();
+  source.stop(audioContext.currentTime + 0.5);
+}
+
+// ========== 3D HACKER MASK (پروتوتایپ 3) ==========
+function init3DMask() {
+  const canvas = document.getElementById('threejs-canvas');
+  
+  // Scene setup
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0);
+  
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+  scene.add(ambientLight);
+  
+  const directionalLight = new THREE.DirectionalLight(0xff0000, 1);
+  directionalLight.position.set(0, 1, 1);
+  scene.add(directionalLight);
+  
+  // Create mask geometry
+  const geometry = new THREE.SphereGeometry(2, 32, 32);
+  
+  // Create mask material with red glow
+  const material = new THREE.MeshPhongMaterial({
+    color: 0x330000,
+    emissive: 0x110000,
+    shininess: 100,
+    transparent: true,
+    opacity: 0.9
+  });
+  
+  mask = new THREE.Mesh(geometry, material);
+  
+  // Add face features (eyes, mouth)
+  const eyeGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+  const eyeMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0xff0000,
+    emissive: 0xff0000,
+    emissiveIntensity: 0.5
+  });
+  
+  const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+  leftEye.position.set(-0.5, 0.3, 1.8);
+  mask.add(leftEye);
+  
+  const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+  rightEye.position.set(0.5, 0.3, 1.8);
+  mask.add(rightEye);
+  
+  // Mouth
+  const mouthGeometry = new THREE.TorusGeometry(0.3, 0.1, 8, 16);
+  const mouthMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0x000000,
+    transparent: true,
+    opacity: 0.8
+  });
+  const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+  mouth.position.set(0, -0.5, 1.8);
+  mouth.rotation.x = Math.PI / 2;
+  mask.add(mouth);
+  
+  scene.add(mask);
+  
+  // Position camera far away initially
+  camera.position.z = 50;
+  
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    if (mask) {
+      mask.rotation.y += 0.005;
+      mask.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+    }
+    
+    renderer.render(scene, camera);
+  }
+  animate();
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+// ========== VEINS SYSTEM (پروتوتایپ 2) ==========
+function initVeins() {
+  veinsCanvas = document.getElementById('veins-canvas');
+  veinsCtx = veinsCanvas.getContext('2d');
+  
+  function resize() {
+    veinsCanvas.width = window.innerWidth;
+    veinsCanvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  const veins = [];
+  const maxVeins = 25;
+  
+  class Vein {
+    constructor() {
+      this.reset();
+    }
+    
+    reset() {
+      this.x = Math.random() * veinsCanvas.width;
+      this.y = Math.random() * veinsCanvas.height;
+      this.targetX = Math.random() * veinsCanvas.width;
+      this.targetY = Math.random() * veinsCanvas.height;
+      this.progress = 0;
+      this.speed = 0.001 + Math.random() * 0.002;
+      this.opacity = 0.1 + Math.random() * 0.3;
+      this.thickness = 1 + Math.random() * 3;
+      this.color = Math.random() > 0.7 ? '#b3122e' : '#ff1e2f';
+    }
+    
+    update() {
+      this.progress += this.speed;
+      if (this.progress >= 1) {
+        this.reset();
+      }
+    }
+    
+    draw() {
+      const currentX = this.x + (this.targetX - this.x) * this.progress;
+      const currentY = this.y + (this.targetY - this.y) * this.progress;
+      
+      veinsCtx.strokeStyle = this.color + Math.floor(this.opacity * 255).toString(16).padStart(2, '0');
+      veinsCtx.lineWidth = this.thickness;
+      veinsCtx.beginPath();
+      veinsCtx.moveTo(this.x, this.y);
+      veinsCtx.lineTo(currentX, currentY);
+      veinsCtx.stroke();
+      
+      // Add glow effect
+      veinsCtx.shadowColor = this.color;
+      veinsCtx.shadowBlur = 10;
+      veinsCtx.stroke();
+      veinsCtx.shadowBlur = 0;
+    }
+  }
+  
+  // Initialize veins
+  for (let i = 0; i < maxVeins; i++) {
+    veins.push(new Vein());
+  }
+  
+  function animateVeins() {
+    veinsCtx.fillStyle = 'rgba(5, 6, 7, 0.02)';
+    veinsCtx.fillRect(0, 0, veinsCanvas.width, veinsCanvas.height);
+    
+    veins.forEach(vein => {
+      vein.update();
+      vein.draw();
+    });
+    
+    requestAnimationFrame(animateVeins);
+  }
+  animateVeins();
+}
+
+// ========== HACKER CHAT SYSTEM ==========
+function initHackerChat() {
+  socket = io();
+  
+  socket.on('new_message', (messageData) => {
+    if (messageData.sender_type === 'admin' && sequenceActive) {
+      displayHackerMessage(messageData.content);
+    }
+  });
+}
+
+function displayHackerMessage(message) {
+  const chatMessages = document.getElementById('chatMessages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'hacker-message';
+  
+  // Add scramble effect
+  messageDiv.innerHTML = `<span class="scramble" data-text="${message}">${message}</span>`;
+  
+  chatMessages.appendChild(messageDiv);
+  
+  // Animate message appearance
+  setTimeout(() => {
+    messageDiv.classList.add('visible');
+  }, 100);
+  
+  // Auto scroll
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  // Play sound
+  playGlitchSound();
+}
+
+// ========== MAIN SEQUENCE ==========
+function beginHackSequence() {
+  console.log('🔴 HACK SEQUENCE INITIATED');
+  sequenceActive = true;
+  
+  const initialUI = document.getElementById('initialUI');
+  const panel = document.getElementById('panel');
+  const glitchOverlay = document.getElementById('glitchOverlay');
+  const veinsCanvas = document.getElementById('veins-canvas');
+  const threejsCanvas = document.getElementById('threejs-canvas');
+  const blackout = document.getElementById('blackout');
+  const hackerChat = document.getElementById('hackerChat');
+  const finalMessage = document.getElementById('finalMessage');
+  
+  // Phase 1: Initial corruption (0-3s)
+  setTimeout(() => {
+    playGlitchSound();
+    glitchOverlay.classList.add('active');
+    initialUI.classList.add('shake');
+    panel.classList.add('shake');
+  }, 500);
+  
+  // Phase 2: Veins activation (2-5s)
+  setTimeout(() => {
+    veinsCanvas.classList.add('active');
+    initialUI.classList.add('corrode');
+    panel.classList.add('corrode');
+  }, 2000);
+  
+  // Phase 3: 3D Mask appears (4-8s)
+  setTimeout(() => {
+    threejsCanvas.classList.add('visible');
+    
+    // Animate camera zoom to mask
+    gsap.to(camera.position, {
+      duration: 4,
+      z: 5,
+      ease: "power2.inOut"
+    });
+    
+    // Intensify mask glow
+    gsap.to(mask.material, {
+      duration: 4,
+      emissiveIntensity: 0.3,
+      ease: "power2.inOut"
+    });
+  }, 4000);
+  
+  // Phase 4: System takeover (8-10s)
+  setTimeout(() => {
+    blackout.classList.add('on');
+    glitchOverlay.classList.remove('active');
+  }, 8000);
+  
+  // Phase 5: Hacker chat activation (10s+)
+  setTimeout(() => {
+    blackout.classList.remove('on');
+    hackerChat.classList.add('active');
+    
+    // Show initial hacker message
+    setTimeout(() => {
+      displayHackerMessage("SYSTEM BREACHED... WELCOME TO MY DOMAIN");
+    }, 1000);
+    
+    setTimeout(() => {
+      displayHackerMessage("YOUR SECURITY WAS... INADEQUATE");
+    }, 3000);
+    
+    setTimeout(() => {
+      displayHackerMessage("I AM IN CONTROL NOW...");
+    }, 5000);
+  }, 10000);
+  
+  // Phase 6: Final message (15s)
+  setTimeout(() => {
+    finalMessage.classList.add('on');
+  }, 15000);
+}
+
+// ========== INITIALIZATION ==========
+window.addEventListener('load', () => {
+  console.log('🔴 Hack sequence page loaded');
+  
+  initAudio();
+  init3DMask();
+  initVeins();
+  initHackerChat();
+  
+  // Start sequence automatically
+  setTimeout(beginHackSequence, 1000);
+});
+</script>
+</body>
+</html>

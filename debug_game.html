@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 CYBER DETECTIVE - تست دیباگ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            height: 100vh;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #00ffff;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .data-stream {
+            flex: 2;
+            position: relative;
+        }
+
+        .stream-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .input-area {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 150px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .file-button {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid rgba(255, 165, 0, 0.5);
+            color: #ffaa00;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-width: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .send-button {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .evidence-wall {
+            flex: 1;
+            position: relative;
+        }
+
+        .wall-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stream-line {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .system-message {
+            color: #00ffff;
+            border-left: 3px solid #00ffff;
+        }
+
+        .user-message {
+            color: #00ff00;
+            border-left: 3px solid #00ff00;
+            margin-left: 20%;
+        }
+
+        .admin-message {
+            color: #ffaa00;
+            border-left: 3px solid #ffaa00;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                gap: 5px;
+                padding: 5px;
+            }
+            
+            .evidence-wall {
+                display: none;
+            }
+            
+            .data-stream {
+                flex: 1;
+            }
+            
+            .message-input {
+                font-size: 16px;
+                padding: 12px 15px;
+                min-height: 50px;
+            }
+            
+            .file-button, .send-button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="panel data-stream">
+        <div class="panel-header">🔍 مرکز فرماندهی · جریان داده</div>
+        <div class="stream-container" id="stream">
+            <div class="stream-line system-message">
+                [SYSTEM] در حال برقراری ارتباط با مرکز فرماندهی...
+            </div>
+            <div class="stream-line system-message">
+                [SYSTEM] اتصال برقرار شد. آماده دریافت دستورات.
+            </div>
+            <div class="stream-line user-message">
+                [USER] سلام، من آماده‌ام!
+            </div>
+            <div class="stream-line admin-message">
+                [DETECTIVE] خوش آمدید کارآگاه! ماموریت شما آغاز شده است.
+            </div>
+        </div>
+        <div class="input-area">
+            <div class="input-row">
+                <textarea class="message-input" placeholder="پیام خود را وارد کنید..." rows="1"></textarea>
+                <button class="file-button">📎</button>
+                <button class="send-button">📡 ارسال</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="panel evidence-wall">
+        <div class="panel-header">🔮 دیوار شواهد · آرشیو هولوگرافیک</div>
+        <div class="wall-container">
+            <div style="color: #00ffff; margin-bottom: 10px;">
+                📋 شواهد جمع‌آوری شده:
+            </div>
+            <div style="color: #ffaa00; margin-bottom: 5px;">
+                • مدرک شماره 1: عکس مظنون
+            </div>
+            <div style="color: #ffaa00; margin-bottom: 5px;">
+                • مدرک شماره 2: پیام مشکوک
+            </div>
+            <div style="color: #00ff00; margin-top: 20px;">
+                وضعیت: در حال تحلیل...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎮 Debug Game Page Loaded Successfully!');
+        
+        // Test button functionality
+        document.querySelector('.send-button').addEventListener('click', function() {
+            const input = document.querySelector('.message-input');
+            const stream = document.getElementById('stream');
+            
+            if (input.value.trim()) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'stream-line user-message';
+                messageDiv.textContent = `[USER] ${input.value}`;
+                stream.appendChild(messageDiv);
+                
+                input.value = '';
+                stream.scrollTop = stream.scrollHeight;
+                
+                // Simulate admin response
+                setTimeout(() => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'stream-line admin-message';
+                    responseDiv.textContent = '[DETECTIVE] پیام شما دریافت شد. در حال بررسی...';
+                    stream.appendChild(responseDiv);
+                    stream.scrollTop = stream.scrollHeight;
+                }, 1000);
+            }
+        });
+        
+        // Enter key support
+        document.querySelector('.message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.querySelector('.send-button').click();
+            }
+        });
+    </script>
+</body>
+</html>

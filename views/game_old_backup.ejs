@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 CYBER DETECTIVE - <%= username %></title>
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            height: 100vh;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        /* ========== GLASSMORPHISM PANELS ========== */
+        .panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #00ffff;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* ========== DATA STREAM (LEFT PANEL) ========== */
+        .data-stream {
+            flex: 2;
+            position: relative;
+        }
+
+        .stream-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .stream-line {
+            margin: 8px 0;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            word-wrap: break-word;
+            animation: streamSlide 0.3s ease;
+        }
+
+        .message-content {
+            margin-left: 10px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        @keyframes streamSlide {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Message alignment - User messages on RIGHT, others on LEFT */
+        .stream-line.user-message {
+            background: rgba(100, 100, 255, 0.2);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            margin-left: 20%;
+            border-bottom-right-radius: 4px;
+        }
+
+        .stream-line.admin-message,
+        .stream-line.detective-message,
+        .stream-line.hacker-message {
+            background: rgba(0, 255, 100, 0.2);
+            border: 1px solid rgba(0, 255, 100, 0.3);
+            margin-right: 20%;
+            border-bottom-left-radius: 4px;
+        }
+
+        .stream-line.detective-message {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+
+        .stream-line.hacker-message {
+            background: rgba(255, 0, 100, 0.2);
+            border-color: rgba(255, 0, 100, 0.3);
+            color: #ff0064;
+            animation: streamSlide 0.3s ease, hackGlow 2s infinite;
+        }
+
+        @keyframes hackGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 100, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(255, 0, 100, 0.6); }
+        }
+
+        .stream-line.system-message {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            color: #ffff00;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .sender {
+            color: #00ffff;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        .message-content {
+            color: #ffffff;
+        }
+
+        .message-image {
+            display: block;
+            max-width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .message-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .file-link {
+            color: #00ffff;
+            text-decoration: none;
+            padding: 5px 10px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .file-link:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        /* Evidence pulse animation */
+        .evidence-pulse {
+            animation: evidencePulse 3s ease-in-out;
+        }
+
+        @keyframes evidencePulse {
+            0%, 100% { 
+                box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+                border-color: rgba(0, 255, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+                border-color: rgba(0, 255, 255, 0.8);
+            }
+        }
+
+        /* Typing caret */
+        .typing-caret {
+            margin: 8px 0;
+            padding: 8px 12px;
+        }
+
+        .caret-blink {
+            animation: caretBlink 1s infinite;
+        }
+
+        @keyframes caretBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* ========== INPUT AREA ========== */
+        .input-area {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 150px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .file-upload {
+            display: none;
+        }
+        .file-button {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid rgba(255, 165, 0, 0.5);
+            color: #ffaa00;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-width: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .file-button:hover {
+            background: rgba(255, 165, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+        }
+
+        .send-button {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        /* ========== EVIDENCE WALL (RIGHT PANEL) ========== */
+        .evidence-wall {
+            flex: 1;
+            position: relative;
+        }
+
+        .wall-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .evidence-card {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .evidence-card.holographic {
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.1) 0%, 
+                rgba(255, 0, 255, 0.1) 50%, 
+                rgba(0, 255, 255, 0.1) 100%);
+            animation: holographic 3s infinite;
+        }
+
+        @keyframes holographic {
+            0%, 100% { border-color: rgba(0, 255, 255, 0.3); }
+            33% { border-color: rgba(255, 0, 255, 0.3); }
+            66% { border-color: rgba(0, 255, 0, 0.3); }
+        }
+
+        @keyframes cardPop {
+            0% { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(2deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .card-header {
+            font-size: 12px;
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: #ffffff;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .card-footer {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+        }
+
+        /* ========== EXTRACTION BEAM ANIMATION ========== */
+        .extraction-beam {
+            position: fixed;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #00ffff 20%, 
+                #ff00ff 50%, 
+                #00ffff 80%, 
+                transparent 100%);
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+            z-index: 1000;
+        }
+
+        @keyframes beamPulse {
+            0% { opacity: 0; width: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ========== PHASE MODES ========== */
+        body.hacker-mode {
+            animation: hackFlicker 0.1s infinite;
+        }
+
+        @keyframes hackFlicker {
+            0%, 98% { filter: none; }
+            99% { filter: hue-rotate(180deg) saturate(2); }
+            100% { filter: none; }
+        }
+
+        body.senior-mode .panel {
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        body.senior-mode .panel-header {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+        }
+
+        /* ========== IMAGE MODAL ========== */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal img,
+        .image-modal video {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            cursor: zoom-out;
+        }
+
+        .image-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2001;
+            transition: all 0.3s ease;
+        }
+
+        .image-modal .close-btn:hover {
+            background: rgba(255, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            .evidence-wall {
+                display: none;
+            }
+            
+            .data-stream {
+                flex: 1;
+            }
+            
+            .panel-header {
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .stream-container {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .message-input {
+                font-size: 16px;
+                padding: 12px 15px;
+                min-height: 50px;
+            }
+            
+            .input-area {
+                padding: 10px;
+            }
+            
+            .stream-line {
+                margin-left: 5%;
+            }
+            
+            .input-row {
+                gap: 8px;
+            }
+            
+            .file-button, .send-button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* ========== SCROLLBAR STYLING ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Data Stream Panel (Left - 70%) -->
+    <div class="panel data-stream">
+        <div class="panel-header">🔍 مرکز فرماندهی · جریان داده</div>
+        <div class="stream-container" id="stream">
+            <!-- Initial loading message -->
+            <div class="stream-line system-message">
+                <span class="timestamp">[INIT]</span>
+                <span class="sender">[SYSTEM]</span>
+                <span class="message-content">در حال برقراری ارتباط با مرکز فرماندهی...</span>
+            </div>
+        </div>
+        <div class="input-area">
+            <div class="input-row">
+                <textarea id="input" class="message-input" placeholder="پیام خود را وارد کنید..." rows="1"></textarea>
+                <input type="file" id="file-input" class="file-upload" accept="image/*,video/*">
+                <button id="file-button" class="file-button">📎</button>
+                <button id="send-button" class="send-button">📡 ارسال</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Evidence Wall Panel (Right - 30%) -->
+    <div class="panel evidence-wall">
+        <div class="panel-header">🔮 دیوار شواهد · آرشیو هولوگرافیک</div>
+        <div class="wall-container" id="evidence-wall">
+            <!-- Evidence cards will be added here dynamically -->
+        </div>
+    </div>
+    
+    <!-- Image Modal -->
+    <div id="image-modal" class="image-modal">
+        <!-- محتوا توسط JavaScript اضافه می‌شود -->
+    </div>
+
+    <!-- User data and scripts -->
+    <script>
+        const userId = '<%= userId %>';
+        const username = '<%= username %>';
+        
+        // Auto-resize textarea function
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('input');
+            
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
+        });
+        
+        // Image modal functions are handled by game-client.js
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/game-client.js"></script>
+</body>

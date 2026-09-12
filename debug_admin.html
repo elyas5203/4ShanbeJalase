@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .debug-panel { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .log { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; }
+        .success { border-left-color: #28a745; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #messages { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Admin Panel</h1>
+    
+    <div class="debug-panel">
+        <h3>Connection Status</h3>
+        <div id="connection-status">Connecting...</div>
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="getUserList()">Get User List</button>
+        <button onclick="loadChatHistory()">Load Chat History (User 6)</button>
+    </div>
+    
+    <div class="debug-panel">
+        <h3>Users</h3>
+        <div id="users-list">Loading...</div>
+    </div>
+    
+    <div class="debug-panel">
+        <h3>Messages</h3>
+        <div id="messages">No messages loaded</div>
+    </div>
+    
+    <div class="debug-panel">
+        <h3>Debug Log</h3>
+        <div id="debug-log"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io({ query: { isAdmin: true } });
+        const debugLog = document.getElementById('debug-log');
+        const connectionStatus = document.getElementById('connection-status');
+        const usersList = document.getElementById('users-list');
+        const messages = document.getElementById('messages');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            debugLog.appendChild(div);
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
+        }
+
+        socket.on('connect', () => {
+            connectionStatus.textContent = 'Connected ✅';
+            connectionStatus.style.color = 'green';
+            log('Socket connected successfully', 'success');
+            
+            // Auto request user list
+            socket.emit('get_user_list');
+        });
+
+        socket.on('disconnect', () => {
+            connectionStatus.textContent = 'Disconnected ❌';
+            connectionStatus.style.color = 'red';
+            log('Socket disconnected', 'error');
+        });
+
+        socket.on('user_list', (users) => {
+            log(`Received user list: ${users.length} users`, 'success');
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.textContent = `${user.username} (ID: ${user.id})`;
+                div.style.padding = '5px';
+                div.style.background = '#e9ecef';
+                div.style.margin = '2px 0';
+                div.style.borderRadius = '4px';
+                usersList.appendChild(div);
+            });
+        });
+
+        socket.on('chat_history', (messages) => {
+            log(`Received chat history: ${messages.length} messages`, 'success');
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            
+            if (messages.length === 0) {
+                messagesDiv.textContent = 'No messages found';
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.style.padding = '8px';
+                div.style.margin = '4px 0';
+                div.style.background = msg.sender_type === 'user' ? '#e3f2fd' : '#f3e5f5';
+                div.style.borderRadius = '4px';
+                div.innerHTML = `
+                    <strong>${msg.sender_type}:</strong> ${msg.content}<br>
+                    <small>User ID: ${msg.user_id} | Time: ${new Date(msg.timestamp).toLocaleString()}</small>
+                `;
+                messagesDiv.appendChild(div);
+            });
+        });
+
+        socket.on('connect_error', (error) => {
+            log('Connection error: ' + error.message, 'error');
+        });
+
+        // Log all socket events
+        socket.onAny((event, ...args) => {
+            log(`Socket event: ${event} | Data: ${JSON.stringify(args).substring(0, 100)}...`);
+        });
+
+        function testConnection() {
+            log('Testing connection...');
+            socket.emit('get_user_list');
+        }
+
+        function getUserList() {
+            log('Requesting user list...');
+            socket.emit('get_user_list');
+        }
+
+        function loadChatHistory() {
+            log('Loading chat history for user 6...');
+            socket.emit('load_chat_history', 6);
+        }
+    </script>
+</body>
+</html>

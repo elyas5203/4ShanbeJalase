@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تست عملکردهای ادمین</title>
+</head>
+<body>
+    <h1>تست سریع</h1>
+    
+    <script>
+        // تست کنید که آیا این عناصر وجود دارند
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== تست عناصر ===');
+            console.log('add-user-form:', document.getElementById('add-user-form'));
+            console.log('new-username:', document.getElementById('new-username'));
+            console.log('new-comment:', document.getElementById('new-comment'));
+            console.log('sender-type:', document.getElementById('sender-type'));
+            console.log('quick-video-btn count:', document.querySelectorAll('.quick-video-btn').length);
+            
+            // تست کلیک روی دکمه ویدیو
+            const videoButtons = document.querySelectorAll('.quick-video-btn');
+            videoButtons.forEach((btn, index) => {
+                console.log(`Video button ${index + 1}:`, btn.getAttribute('data-file-url'));
+            });
+        });
+    </script>
+</body>
+</html>

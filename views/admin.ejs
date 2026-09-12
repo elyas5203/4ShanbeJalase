@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ادمین</title>
+    <link rel="icon" href="/assets/favicon-detective.ico">
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .message-packet .delete-message-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border: 1px solid rgba(255, 99, 99, 0.6);
+            background: rgba(255, 50, 50, 0.12);
+            color: #ff8a8a;
+            border-radius: 6px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+        .message-packet .delete-message-btn:hover {
+            background: rgba(255, 50, 50, 0.2);
+            box-shadow: 0 0 8px rgba(255, 50, 50, 0.3);
+            transform: translateY(-1px);
+        }
+        .message-packet:hover .delete-message-btn {
+            display: inline-flex;
+        }
+        /* Also show when explicitly toggled (for mobile tap) */
+        .message-packet.show-actions .delete-message-btn,
+        .message-packet.show-actions .edit-message-btn {
+            display: inline-flex;
+        }
+
+        .message-packet .edit-message-btn {
+            position: absolute;
+            top: 6px;
+            right: 34px;
+            width: 22px;
+            height: 22px;
+            border: 1px solid rgba(0, 153, 255, 0.6);
+            background: rgba(0, 153, 255, 0.12);
+            color: #73c2ff;
+            border-radius: 6px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+        .message-packet .edit-message-btn:hover {
+            background: rgba(0, 153, 255, 0.2);
+            box-shadow: 0 0 8px rgba(0, 153, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        .message-packet:hover .edit-message-btn {
+            display: inline-flex;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* ========== HAMBURGER BUTTON ========== */
+        #sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            font-size: 18px;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        #sidebar-toggle:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* ========== SIDEBAR STYLES ========== */
+        #admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            background: rgba(10, 10, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 2px solid rgba(0, 255, 255, 0.3);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 80px 0 20px 0;
+        }
+
+        body.sidebar-open #admin-sidebar {
+            transform: translateX(0);
+        }
+
+        .sidebar-section {
+            margin: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .sidebar-title {
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========== USER LIST ========== */
+        #users-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* ========== NOTIFICATION BADGE ========== */
+        .user-item {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(255, 71, 87, 0.4);
+            animation: pulse-notification 2s infinite;
+            z-index: 10;
+        }
+        
+        .notification-badge.hidden {
+            display: none;
+        }
+        
+        @keyframes pulse-notification {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 6px rgba(255, 71, 87, 0.4);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 4px 12px rgba(255, 71, 87, 0.6);
+            }
+        }
+        
+        /* اضافه کردن فضا برای badge در user-item */
+        .user-item .user-name {
+            padding-left: 35px; /* فضا برای badge */
+        }
+
+        .user-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .user-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            transform: translateX(5px);
+        }
+
+        .user-item.selected {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .user-status {
+            font-size: 11px;
+            color: #aaaaaa;
+            margin-top: 3px;
+        }
+
+        /* ========== CONTROLS ========== */
+        .control-group {
+            margin: 10px 0;
+        }
+
+        .control-label {
+            display: block;
+            color: #cccccc;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        button {
+            background: rgba(0, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        #main-content {
+            margin-left: 0;
+            padding: 20px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        body.sidebar-open #main-content {
+            margin-left: 320px;
+        }
+
+        /* ========== CHAT CONTAINER ========== */
+        #chat-container {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .chat-info {
+            font-size: 18px;
+            color: #eaffff;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* ========== MESSAGES AREA ========== */
+        #messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+
+
+        /* ========== INPUT AREA ========== */
+        .input-area {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .phase-indicator {
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            font-size: 10px;
+            color: #00ffff;
+            text-align: center;
+            max-width: 150px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #current-character {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* ========== AVATAR STYLES FOR ADMIN ========== */
+        .sender-avatar {
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .packet-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .packet-avatar:hover {
+            transform: scale(1.1);
+            border-color: rgba(0, 255, 255, 0.6);
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+        }
+        
+        .user-message .packet-avatar {
+            border-color: rgba(0, 255, 100, 0.4);
+        }
+        
+        .user-message .packet-avatar:hover {
+            border-color: rgba(0, 255, 100, 0.8);
+            box-shadow: 0 0 8px rgba(0, 255, 100, 0.4);
+        }
+        
+        .hacker-message .packet-avatar {
+            border-color: rgba(255, 0, 100, 0.4);
+        }
+        
+        .hacker-message .packet-avatar:hover {
+            border-color: rgba(255, 0, 100, 0.8);
+            box-shadow: 0 0 8px rgba(255, 0, 100, 0.4);
+        }
+        
+        .system-message .packet-avatar {
+            border-color: rgba(255, 255, 0, 0.4);
+        }
+        
+        .system-message .packet-avatar:hover {
+            border-color: rgba(255, 255, 0, 0.8);
+            box-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+        }
+
+        /* ========== QUICK VIDEO BUTTONS ========== */
+        .quick-video-btn {
+            padding: 8px 6px;
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            color: #0096ff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .quick-video-btn:hover {
+            background: rgba(0, 150, 255, 0.2);
+            border-color: rgba(0, 150, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 150, 255, 0.3);
+        }
+        
+        .quick-video-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 150, 255, 0.2);
+        }
+
+        /* ========== HOLOGRAPHIC DATA PACKETS FOR ADMIN ========== */
+        
+        /* بسته داده اصلی */
+        .message-packet {
+            position: relative;
+            margin: 8px 0;
+            max-width: 320px;
+            min-width: 120px;
+            background: rgba(0, 20, 40, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+            box-shadow: 
+                0 0 15px rgba(0, 255, 255, 0.2),
+                inset 0 0 15px rgba(0, 255, 255, 0.05);
+            animation: packetGlow 3s ease-in-out infinite alternate;
+            transition: all 0.3s ease;
+        }
+        
+        .message-packet:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 25px rgba(0, 255, 255, 0.4),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        /* بسته داده کاربر - سمت راست */
+        .message-packet.user-message {
+            align-self: flex-end;
+            margin-left: auto;
+            background: rgba(0, 40, 20, 0.4);
+            border-color: rgba(0, 255, 100, 0.4);
+            box-shadow: 
+                0 0 15px rgba(0, 255, 100, 0.2),
+                inset 0 0 15px rgba(0, 255, 100, 0.05);
+        }
+        
+        .message-packet.user-message:hover {
+            box-shadow: 
+                0 0 25px rgba(0, 255, 100, 0.4),
+                inset 0 0 20px rgba(0, 255, 100, 0.1);
+        }
+        
+        /* بسته داده ادمین - سمت چپ */
+        .message-packet.admin-message {
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        
+        /* بسته داده هکر */
+        .message-packet.hacker-message {
+            background: rgba(40, 0, 0, 0.4);
+            border-color: rgba(255, 0, 100, 0.4);
+            box-shadow: 
+                0 0 15px rgba(255, 0, 100, 0.3),
+                inset 0 0 15px rgba(255, 0, 100, 0.05);
+            animation: hackerPacketGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .message-packet.hacker-message:hover {
+            box-shadow: 
+                0 0 30px rgba(255, 0, 100, 0.5),
+                inset 0 0 25px rgba(255, 0, 100, 0.15);
+        }
+        
+        /* هدر بسته */
+        .packet-header {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(0, 255, 255, 0.9);
+        }
+        
+        .user-message .packet-header {
+            background: rgba(0, 255, 100, 0.1);
+            border-bottom-color: rgba(0, 255, 100, 0.2);
+            color: rgba(0, 255, 100, 0.9);
+        }
+        
+        .hacker-message .packet-header {
+            background: rgba(255, 0, 100, 0.1);
+            border-bottom-color: rgba(255, 0, 100, 0.2);
+            color: rgba(255, 0, 100, 0.9);
+        }
+        
+        /* محتوای بسته */
+        .packet-content {
+            padding: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: right;
+            direction: rtl;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .packet-content img,
+        .packet-content video {
+            max-width: 100%;
+            border-radius: 6px;
+            margin: 8px 0;
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+        
+        .packet-content img:hover,
+        .packet-content video:hover {
+            transform: scale(1.02);
+        }
+        
+        /* فوتر بسته */
+        .packet-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 4px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Courier New', monospace;
+            direction: ltr;
+        }
+        
+        /* انیمیشن‌ها */
+        @keyframes packetGlow {
+            0% { 
+                box-shadow: 
+                    0 0 15px rgba(0, 255, 255, 0.2),
+                    inset 0 0 15px rgba(0, 255, 255, 0.05);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 255, 0.3),
+                    inset 0 0 20px rgba(0, 255, 255, 0.08);
+            }
+        }
+        
+        @keyframes hackerPacketGlow {
+            0% { 
+                box-shadow: 
+                    0 0 15px rgba(255, 0, 100, 0.3),
+                    inset 0 0 15px rgba(255, 0, 100, 0.05);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 25px rgba(255, 0, 100, 0.5),
+                    inset 0 0 20px rgba(255, 0, 100, 0.1);
+            }
+        }
+        
+        /* پیام سیستم */
+        .system-message {
+            align-self: center;
+            background: rgba(255, 255, 0, 0.1);
+            border-color: rgba(255, 255, 0, 0.3);
+            color: #ffff99;
+            text-align: center;
+            font-style: italic;
+            max-width: 280px;
+        }
+        
+        .system-message .packet-header {
+            background: rgba(255, 255, 0, 0.1);
+            border-bottom-color: rgba(255, 255, 0, 0.2);
+            color: rgba(255, 255, 0, 0.9);
+            justify-content: center;
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        #sender-type {
+            flex: 1;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .file-button {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid rgba(255, 165, 0, 0.5);
+            color: #ffaa00;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .file-button:hover {
+            background: rgba(255, 165, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+        }
+
+        /* ========== PRELOADED FILES ========== */
+        .preloaded-file-btn {
+            width: 100%;
+            margin: 3px 0;
+            padding: 8px 12px;
+            background: rgba(0, 255, 100, 0.1);
+            border: 1px solid rgba(0, 255, 100, 0.3);
+            color: #00ff66;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: left;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preloaded-file-btn:hover {
+            background: rgba(0, 255, 100, 0.2);
+            box-shadow: 0 0 8px rgba(0, 255, 100, 0.3);
+            transform: translateX(2px);
+        }
+
+        .preloaded-file-btn .file-icon {
+            font-size: 14px;
+            min-width: 16px;
+        }
+
+        .preloaded-file-btn .file-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .preloaded-file-btn .file-name {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preloaded-file-btn .file-desc {
+            font-size: 9px;
+            opacity: 0.7;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .message-input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+        }
+
+        #message-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        #send-button {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+            padding: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 3px rgba(0, 255, 0, 0.2);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+
+        #send-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (min-width: 900px) {
+            /* Desktop: Sidebar open by default */
+            #admin-sidebar {
+                transform: translateX(0);
+            }
+            
+            #main-content {
+                margin-left: 320px;
+            }
+            
+            body.sidebar-closed #admin-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            body.sidebar-closed #main-content {
+                margin-left: 0;
+            }
+            
+            /* بهبود اندازه چت در دسکتاپ */
+            #chat-container {
+                height: calc(100vh - 20px);
+                min-height: 600px;
+            }
+            
+            #messages {
+                min-height: 400px;
+            }
+        }
+
+        /* ========== CANNED RESPONSES STYLES ========== */
+        
+        /* دکمه پاسخ‌های آماده */
+        #canned-responses-btn {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        #canned-responses-btn:hover {
+            background: linear-gradient(135deg, #357abd, #2968a3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Modal پاسخ‌های آماده */
+        .canned-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .canned-modal-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .canned-modal-header {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            padding: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .canned-modal-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .canned-modal-close {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .canned-modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+        
+        .canned-modal-body {
+            padding: 20px;
+            max-height: calc(90vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* Students grid cards */
+        #students-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .student-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .student-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,255,255,0.35);
+            box-shadow: 0 0 18px rgba(0,255,255,0.15);
+            object-fit: cover;
+            margin-bottom: 8px;
+            cursor: zoom-in;
+        }
+        .student-name { font-weight: bold; }
+        .student-class { font-size: 11px; opacity: .8; }
+        .student-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .student-actions button { padding: 6px 8px; font-size: 12px; }
+        
+        .responses-section, .add-response-section {
+            margin-bottom: 30px;
+        }
+        
+        .responses-section h3, .add-response-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 8px;
+        }
+        
+        .responses-list {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .response-item {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .response-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .response-item-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #87ceeb;
+        }
+        
+        .response-item-preview {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .add-response-form {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #87ceeb;
+            box-shadow: 0 0 10px rgba(135,206,235,0.3);
+        }
+        
+        .save-response-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .save-response-btn:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 899px) {
+            /* Mobile: Sidebar closed by default */
+            #admin-sidebar {
+                width: 280px;
+            }
+            
+            body.sidebar-open #main-content {
+                margin-left: 0;
+            }
+            
+            /* دکمه ارسال کوچک‌تر در موبایل */
+            #send-button {
+                width: 26px;
+                height: 26px;
+                font-size: 10px;
+                padding: 0;
+                margin-left: 2px;
+            }
+            
+            /* textarea بیشتر فضا در موبایل */
+            #message-input {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .input-controls {
+                flex-direction: column;
+            }
+            
+            .message-input-row {
+                flex-direction: column;
+            }
+            /* در موبایل دکمه‌ها فقط وقتی روی پیام تَپ شود نمایش داده می‌شوند */
+            .message-packet .delete-message-btn,
+            .message-packet .edit-message-btn {
+                display: none;
+                width: 26px;
+                height: 26px;
+                top: 8px;
+                right: 8px;
+            }
+            .message-packet .edit-message-btn { right: 38px; }
+            .message-packet.show-actions .delete-message-btn,
+            .message-packet.show-actions .edit-message-btn { display: inline-flex; }
+        }
+
+        /* ========== IMAGE MODAL ========== */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .image-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #ffffff;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        /* ========== SCROLLBAR STYLING ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+
+        #students-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .student-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            background: rgba(0, 30, 40, 0.35);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.08);
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .student-card:hover { transform: translateY(-2px); box-shadow: 0 0 26px rgba(0,255,255,.2); }
+        .student-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(0, 255, 255, 0.35);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.22);
+            background: rgba(255,255,255,0.06);
+        }
+        .student-name { font-weight: 700; font-size: 14px; text-align: center; }
+        .student-class { font-size: 11px; opacity: .7; }
+
+        .student-modal-overlay { display: none; position: fixed; z-index: 3000; inset: 0; background: rgba(0,0,0,.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+        .student-modal-overlay.show { display: flex; }
+        .modal-card { width: 520px; max-width: 92vw; background: rgba(0,20,30,.65); border: 1px solid rgba(0,255,255,.25); border-radius: 14px; box-shadow: 0 0 30px rgba(0,255,255,.25); padding: 16px; color: #fff; }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+        .modal-close { background: transparent; color: #fff; font-size: 26px; line-height: 1; border: 1px solid rgba(255,255,255,.3); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; }
+        .photo-box { display: flex; align-items: center; justify-content: center; margin: 10px 0 14px; }
+        #student-modal-photo { max-width: 100%; max-height: 60vh; border-radius: 12px; border: 2px solid rgba(0,255,255,.35); box-shadow: 0 0 30px rgba(0,255,255,.25); cursor: zoom-in; }
+        /* Validation Queue minimal styles */
+        .validation-queue { max-height: 200px; overflow-y: auto; }
+        .validation-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); padding: 10px; margin-bottom: 6px; border-radius: 8px; }
+        #student-selector { width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,.3); color: #fff; border: 1px solid rgba(0,255,255,.25); }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Toggle Button -->
+    <button id="sidebar-toggle">☰</button>
+
+    <!-- Collapsible Sidebar -->
+    <aside id="admin-sidebar">
+
+        <!-- Users Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">👥 کاربران فعال</div>
+            <div id="users-list">
+                <div class="user-item" data-user-id="loading">
+                    <div class="user-name">در حال بارگذاری کاربران...</div>
+                    <div class="user-status">لطفاً صبر کنید</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation Queue -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">🪪 صف تایید هویت (<span id="dossier-count">0</span>)</div>
+            <div id="validation-queue" class="validation-queue">
+                <div style="font-size:12px; opacity:.7;">در انتظار درخواست...</div>
+            </div>
+            <div style="margin-top:8px; display:flex; gap:8px;">
+                <a href="/gostantaniye/validation?key=110" style="display:inline-block; padding:8px 10px; background:rgba(0,153,255,0.12); border:1px solid rgba(0,153,255,0.4); color:#73c2ff; border-radius:8px; text-decoration:none; font-size:12px;">🔎 اتاق کنترل تصاویر</a>
+            </div>
+        </div>
+
+        <!-- Mission Controls حذف شد -->
+
+        <!-- Quick Video Send -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">🎬 ارسال سریع ویدیو</div>
+            <div id="quick-video-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button class="quick-video-btn" data-file-url="/video/move/move1.mp4" data-file-name="(فیلم اول(فرودگاه))">📹 (فیلم اول(فرودگاه))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move2.mp4" data-file-name="(فیلم دوم (حرکت جی پی اس))">📹 (فیلم دوم (حرکت جی پی اس))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move3.mp4" data-file-name="(فیلم سوم(پارک))">📹 (فیلم سوم(پارک))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move4.mp4" data-file-name="(فیلم چهارم (رسیدن به کافی شاپ))">📹 (فیلم چهارم (رسیدن به کافی شاپ))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move5.mp4" data-file-name="(فیلم پنجم (سفارش آبمیوه))">📹 (فیلم پنجم (سفارش آبمیوه))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move6.mp4" data-file-name="(فیلم ششم (کارگاه در موزه))">📹 (فیلم ششم (کارگاه در موزه))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move7.mp4" data-file-name="فیلم هفتم (مسئول مانیتورینگ موزه)">📹 فیلم هفتم (مسئول مانیتورینگ موزه)</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move8.mp4" data-file-name="(فیلم هشتم(دکتر آزمایشگاه))">📹 (فیلم هشتم(دکتر آزمایشگاه))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move9.mp4" data-file-name="(فیلم نهم(سلول های زیر میکروسکوپ))">📹 (فیلم نهم(سلول های زیر میکروسکوپ))</button>
+                <button class="quick-video-btn" data-file-url="/video/move/move10.mp4" data-file-name="(فیلم دهم(پست در آتش سوخت))">📹 (فیلم دهم(پست در آتش سوخت))</button>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">🛠️ عملیات ادمین</div>
+            <button id="broadcast-btn">📢 پخش عمومی</button>
+            <button id="hack-sequence-btn" style="background: rgba(255, 0, 0, 0.2); border-color: rgba(255, 0, 0, 0.5); color: #ff0000;">🔴 شروع فاز هک</button>
+            <div class="control-group" style="display:flex; gap:8px; margin-top:8px;">
+                <button id="chat-enable-btn" title="فعال‌سازی چت برای کاربر انتخاب‌شده" style="background: rgba(0,255,0,0.15); border-color: rgba(0,255,0,0.4); color:#00ff64;">🔓 فعال‌سازی چت</button>
+                <button id="chat-disable-btn" title="غیرفعال‌سازی چت برای کاربر انتخاب‌شده" style="background: rgba(255,0,0,0.15); border-color: rgba(255,0,0,0.4); color:#ff4d4f;">🔒 غیرفعال‌سازی چت</button>
+            </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">📎 اشتراک فایل</div>
+            <input type="file" id="file-input" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+            <button class="file-button" onclick="document.getElementById('file-input').click()">
+                📁
+            </button>
+            <div id="file-status" style="font-size: 11px; color: #aaa; margin-top: 5px;"></div>
+        </div>
+
+        <!-- Add New User Section (moved to bottom) -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">➕ افزودن کاربر جدید</div>
+            <form id="add-user-form" style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="new-username" placeholder="نام کاربری" 
+                       style="padding: 8px; border: 1px solid rgba(0, 255, 255, 0.3); 
+                              background: rgba(0, 0, 0, 0.3); color: #fff; border-radius: 5px;
+                              font-size: 12px;" required>
+                <input type="text" id="new-comment" placeholder="کامنت (نام مستعار)" 
+                       style="padding: 8px; border: 1px solid rgba(0, 255, 255, 0.3); 
+                              background: rgba(0, 0, 0, 0.3); color: #fff; border-radius: 5px;
+                              font-size: 12px;" required>
+                <input type="text" id="new-access-code" placeholder="کد ورود اختصاصی کاربر (الزامی)" 
+                       style="padding: 8px; border: 1px solid rgba(0, 255, 255, 0.3); 
+                              background: rgba(0, 0, 0, 0.3); color: #fff; border-radius: 5px;
+                              font-size: 12px;" required>
+                <button type="submit" id="add-user-btn" 
+                        style="padding: 8px; background: rgba(0, 255, 100, 0.2); 
+                               border: 1px solid rgba(0, 255, 100, 0.4); color: #00ff64; 
+                               border-radius: 5px; cursor: pointer; font-size: 12px; 
+                               transition: all 0.3s ease;">
+                    ✅ افزودن کاربر
+                </button>
+            </form>
+        </div>
+
+        <!-- Students Management (moved to bottom) -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">👥 مدیریت دستیاران کلاس</div>
+            <div class="control-group">
+                <label class="control-label" for="student-class-id">شناسه کلاس (classId):</label>
+                <input id="student-class-id" type="text" placeholder="مثال: 6A یا 101">
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="student-name">نام دانش‌آموز:</label>
+                <input id="student-name" type="text" placeholder="مثال: علی رضایی">
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="student-photo">نام فایل عکس (بدون مسیر):</label>
+                <input id="student-photo" type="text" placeholder="مثال: ali-rezaei.jpg">
+                <div style="font-size: 11px; opacity: .7; margin-top: 4px;">عکس‌ها باید در مسیر <code>/assets/students/</code> قرار بگیرند.</div>
+            </div>
+            <input id="student-id" type="hidden" value="">
+            <div class="control-group" style="display:flex; gap:8px;">
+                <button id="students-load-btn">📥 بارگذاری لیست</button>
+                <button id="student-save-btn" style="background: rgba(0,255,100,0.15); border-color: rgba(0,255,100,0.4); color:#00ff64;">💾 ذخیره</button>
+                <button id="student-clear-btn">🧹 پاک‌سازی فرم</button>
+            </div>
+            <div id="students-list"></div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <div id="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">🎮 مرکز فرماندهی کارآگاهی</div>
+                <div class="chat-info" id="chat-info">یک کاربر را برای شروع چت انتخاب کنید</div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="messages"></div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <!-- sender-type حذف شد -->
+                <div class="message-input-row">
+                    <textarea id="message-input" placeholder="پیام خود را اینجا تایپ کنید..." rows="1"></textarea>
+                    <button id="canned-responses-btn" title="پاسخ‌های آماده">📋</button>
+                    <button id="send-button">📡</button>
+                </div>
+                <!-- phase-indicator حذف شد -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="image-modal">
+        <!-- محتوا توسط JavaScript اضافه می‌شود -->
+    </div>
+
+    <div id="student-modal-overlay" class="student-modal-overlay">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle" onclick="event.stopPropagation()">
+            <div class="modal-head">
+                <div id="studentModalTitle">👥 پرونده دستیاران کارآگاه</div>
+                <button id="student-modal-close" class="modal-close" aria-label="بستن">×</button>
+            </div>
+            <div class="photo-box">
+                <img id="student-modal-photo" src="/assets/placeholder.png" alt="عکس دانش‌آموز">
+            </div>
+            <select id="student-selector">
+                <option value="">یک دستیار را انتخاب کنید...</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Canned Responses Modal -->
+    <div id="canned-responses-modal" class="canned-modal">
+        <div class="canned-modal-content">
+            <div class="canned-modal-header">
+                <h2>📋 پاسخ‌های آماده</h2>
+                <button class="canned-modal-close" id="canned-modal-close">✕</button>
+            </div>
+            
+            <div class="canned-modal-body">
+                <!-- لیست پیام‌های موجود -->
+                <div class="responses-section">
+                    <h3>پیام‌های موجود:</h3>
+                    <div id="responses-list" class="responses-list">
+                        <!-- پیام‌ها توسط JavaScript بارگذاری می‌شوند -->
+                    </div>
+                </div>
+                
+                <!-- فرم افزودن پیام جدید -->
+                <div class="add-response-section">
+                    <h3>افزودن پیام جدید:</h3>
+                    <form id="add-response-form" class="add-response-form">
+                        <div class="form-group">
+                            <label for="new-response-name">نام کوتاه:</label>
+                            <input type="text" id="new-response-name" placeholder="مثال: خوش‌آمدگویی" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-response-content">متن کامل:</label>
+                            <textarea id="new-response-content" rows="4" placeholder="متن پیام را اینجا وارد کنید..." required></textarea>
+                        </div>
+                        <button type="submit" class="save-response-btn">💾 ذخیره پیام جدید</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO and Admin Client Script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/admin-client.js"></script>
+</body>
+</html>

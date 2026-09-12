@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ادمین ساده - تست</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #2c2f33;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: #23272a;
+            padding: 20px;
+            border-left: 1px solid #40444b;
+        }
+        
+        .workspace {
+            flex: 1;
+            background: #36393f;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #2c2f33;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .user-item:hover {
+            background: #36393f;
+            border-color: #7289da;
+        }
+        
+        .user-item.selected {
+            background: #7289da !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(114, 137, 218, 0.7);
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .user-id {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .header {
+            background: #2c2f33;
+            padding: 20px;
+            border-bottom: 1px solid #40444b;
+            display: none;
+            border-left: 4px solid #7289da;
+        }
+        
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .no-user {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 18px;
+            color: #72767d;
+        }
+        
+        .chat-message {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            margin-left: auto;
+            background: linear-gradient(135deg, #0084ff, #0066cc);
+            color: #ffffff;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .admin-message {
+            align-self: flex-start;
+            margin-right: auto;
+            background: linear-gradient(135deg, #36393f, #2c2f33);
+            color: #ffffff;
+            border-bottom-left-radius: 5px;
+            border: 1px solid rgba(125, 240, 255, 0.3);
+        }
+        
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            text-align: right;
+        }
+        
+        .input-area {
+            background: #40444b;
+            padding: 20px;
+            border-top: 1px solid #40444b;
+            display: none;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: #36393f;
+            border: 1px solid #40444b;
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 14px;
+            resize: none;
+            min-height: 45px;
+            outline: none;
+        }
+        
+        .message-input:focus {
+            border-color: #7289da;
+        }
+        
+        .send-btn {
+            padding: 12px 25px;
+            background: #7289da;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover {
+            background: #677bc4;
+            transform: translateY(-1px);
+        }
+        
+        .controls {
+            background: #2c2f33;
+            border-top: 1px solid #40444b;
+            padding: 15px 20px;
+            display: none;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary { background: #7289da; color: white; }
+        .btn-warning { background: #faa61a; color: white; }
+        .btn-danger { background: #f04747; color: white; }
+        
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .test-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #ff0000;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .test-button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Test Button -->
+    <button class="test-button" onclick="testFunction()">🔧 تست کلیک</button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2 style="margin-bottom: 20px; text-align: center;">👥 کاربران</h2>
+        
+        <div class="user-item" onclick="selectUser(this, '123', 'کاربر تست 1')">
+            <div class="user-name">کاربر تست 1</div>
+            <div class="user-id">#123</div>
+        </div>
+        
+        <div class="user-item" onclick="selectUser(this, '456', 'کاربر تست 2')">
+            <div class="user-name">کاربر تست 2</div>
+            <div class="user-id">#456</div>
+        </div>
+        
+        <div class="user-item" onclick="selectUser(this, '789', 'علی احمدی')">
+            <div class="user-name">علی احمدی</div>
+            <div class="user-id">#789</div>
+        </div>
+    </div>
+    
+    <!-- Workspace -->
+    <div class="workspace">
+        <!-- Header -->
+        <div class="header" id="header">
+            <h3 id="selected-user-name">کاربری انتخاب نشده</h3>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="chat-area" id="chat-area">
+            <div class="no-user">
+                💬 یک کاربر را انتخاب کنید تا شروع به چت کنید
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="input-area" id="input-area">
+            <div class="input-row">
+                <textarea id="message-input" class="message-input" placeholder="پیام خود را بنویسید..." rows="1"></textarea>
+                <button class="send-btn" onclick="sendMessage()">📤 ارسال</button>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls" id="controls">
+            <div class="control-buttons">
+                <button class="control-btn btn-primary" onclick="advanceStage()">⚡ مرحله بعد</button>
+                <button class="control-btn btn-danger" onclick="resetProgress()">🔄 بازنشانی</button>
+                <button class="control-btn btn-warning" onclick="triggerHack()">💀 فاز هک</button>
+                <button class="control-btn btn-danger" onclick="triggerSenior()">👨‍💼 فاز ارشد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedUserId = null;
+        let selectedUsername = null;
+        
+        function testFunction() {
+            alert('✅ دکمه تست کار می‌کند!\n\nحالا روی یکی از کاربران کلیک کنید.');
+            console.log('🔧 Test function called');
+        }
+        
+        function selectUser(element, userId, username) {
+            console.log('👤 Selecting user:', username, userId);
+            
+            // Remove previous selection
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked user
+            element.classList.add('selected');
+            
+            // Store selected user info
+            selectedUserId = userId;
+            selectedUsername = username;
+            
+            // Show header
+            const header = document.getElementById('header');
+            const selectedUserNameEl = document.getElementById('selected-user-name');
+            header.style.display = 'block';
+            selectedUserNameEl.textContent = `💬 ${username}`;
+            
+            // Show input area
+            const inputArea = document.getElementById('input-area');
+            inputArea.style.display = 'block';
+            
+            // Show controls
+            const controls = document.getElementById('controls');
+            controls.style.display = 'block';
+            
+            // Load sample chat
+            loadSampleChat();
+            
+            alert(`✅ کاربر "${username}" انتخاب شد!\n\nحالا می‌توانید پیام ارسال کنید.`);
+        }
+        
+        function loadSampleChat() {
+            const chatArea = document.getElementById('chat-area');
+            chatArea.innerHTML = `
+                <div class="chat-message admin-message">
+                    <div class="message-text">سلام! خوش آمدید.</div>
+                    <div class="message-time">13:30</div>
+                </div>
+                <div class="chat-message user-message">
+                    <div class="message-text">سلام ادمین عزیز!</div>
+                    <div class="message-time">13:31</div>
+                </div>
+                <div class="chat-message admin-message">
+                    <div class="message-text">چطور می‌تونم کمکتون کنم؟</div>
+                    <div class="message-time">13:32</div>
+                </div>
+            `;
+        }
+        
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const chatArea = document.getElementById('chat-area');
+            
+            const message = messageInput.value.trim();
+            if (!message) {
+                alert('⚠️ لطفاً پیامی بنویسید!');
+                return;
+            }
+            
+            if (!selectedUserId) {
+                alert('⚠️ لطفاً ابتدا یک کاربر را انتخاب کنید!');
+                return;
+            }
+            
+            console.log('📤 Sending message:', message, 'to user:', selectedUserId);
+            
+            // Add message to chat
+            const newMessage = document.createElement('div');
+            newMessage.className = 'chat-message admin-message';
+            newMessage.innerHTML = `
+                <div class="message-text">${message}</div>
+                <div class="message-time">${new Date().toLocaleTimeString('fa-IR')}</div>
+            `;
+            
+            chatArea.appendChild(newMessage);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Auto-resize textarea
+            messageInput.style.height = 'auto';
+            
+            alert(`✅ پیام ارسال شد: "${message}"`);
+        }
+        
+        function advanceStage() {
+            if (!selectedUserId) {
+                alert('⚠️ لطفاً ابتدا یک کاربر را انتخاب کنید!');
+                return;
+            }
+            alert(`⚡ مرحله بعد برای کاربر "${selectedUsername}" فعال شد!`);
+            console.log('⚡ Advance stage for user:', selectedUserId);
+        }
+        
+        function resetProgress() {
+            if (!selectedUserId) {
+                alert('⚠️ لطفاً ابتدا یک کاربر را انتخاب کنید!');
+                return;
+            }
+            if (confirm(`آیا مطمئن هستید که می‌خواهید پیشرفت "${selectedUsername}" را بازنشانی کنید؟`)) {
+                alert(`🔄 پیشرفت کاربر "${selectedUsername}" بازنشانی شد!`);
+                console.log('🔄 Reset progress for user:', selectedUserId);
+            }
+        }
+        
+        function triggerHack() {
+            if (!selectedUserId) {
+                alert('⚠️ لطفاً ابتدا یک کاربر را انتخاب کنید!');
+                return;
+            }
+            alert(`💀 فاز هک برای کاربر "${selectedUsername}" فعال شد!`);
+            console.log('💀 Trigger hack phase for user:', selectedUserId);
+        }
+        
+        function triggerSenior() {
+            if (!selectedUserId) {
+                alert('⚠️ لطفاً ابتدا یک کاربر را انتخاب کنید!');
+                return;
+            }
+            alert(`👨‍💼 فاز ارشد برای کاربر "${selectedUsername}" فعال شد!`);
+            console.log('👨‍💼 Trigger senior phase for user:', selectedUserId);
+        }
+        
+        // Auto-resize textarea
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            if (messageInput) {
+                messageInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+                });
+                
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+            }
+            
+            console.log('✅ Simple Admin Panel Loaded Successfully!');
+            alert('✅ پنل ادمین ساده بارگذاری شد!\n\n1. روی دکمه قرمز کلیک کنید\n2. یک کاربر را انتخاب کنید\n3. پیام ارسال کنید');
+        });
+    </script>
+</body>
+</html>

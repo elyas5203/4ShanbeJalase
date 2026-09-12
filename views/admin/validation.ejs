@@ -1,0 +1,25 @@
+<!-- views/admin/validation.ejs -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>مرکز تایید هویت</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+    <link rel="stylesheet" href="/css/admin-validation-style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <h1>مرکز تایید هویت</h1>
+                <a href="/gostantaniye?key=110" style="display:inline-block; padding:8px 12px; background:rgba(0,153,255,0.12); border:1px solid rgba(0,153,255,0.4); color:#73c2ff; border-radius:8px; text-decoration:none; font-size:12px;">⬅ بازگشت به پنل</a>
+            </div>
+            <div class="tabs" id="class-tabs"></div>
+        </header>
+        <main id="dossier-container"></main>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/js/admin-validation-client.js"></script>
+</body>
+</html>

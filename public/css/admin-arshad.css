@@ -1,0 +1,81 @@
+/* public/css/admin-arshad.css */
+:root {
+  --bg: #0b0f0b; --panel: rgba(10,16,10,.8); --border: rgba(80,200,120,.35);
+  --jade: #50c878; --gold:#d4af37; --text:#e6ffe9;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#061006,#0b0f0b);color:var(--text);font-family:Vazirmatn,system-ui,sans-serif}
+.arshad-admin{max-width:1200px;margin:0 auto;padding:16px}
+.header{margin-bottom:12px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:12px}
+.users-panel,.chat-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px}
+.users-panel{padding:10px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.badge{background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.35);color:var(--gold);border-radius:10px;padding:2px 8px;font-size:12px}
+.users-list{display:flex;flex-direction:column;gap:6px;max-height:70vh;overflow:auto}
+.user-item{padding:8px 10px;border:1px solid rgba(255,255,255,.08);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.user-item.online{border-color:rgba(80,200,120,.5)}
+.user-item.active{outline:2px solid var(--gold)}
+.user-item .name{font-weight:700}
+.user-item .meta{opacity:.9;font-size:12px;display:flex;align-items:center;gap:6px}
+.user-item .meta .unread{display:inline-block;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.45);color:var(--gold);text-align:center;line-height:18px;font-weight:700}
+.chat-panel{display:flex;flex-direction:column}
+.chat-info{padding:10px;border-bottom:1px solid var(--border);color:var(--gold)}
+.messages{padding:12px;height:60vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:72%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);word-wrap:break-word;overflow-wrap:anywhere}
+.msg.user{margin-left:auto;background:rgba(80,200,120,.14);border-color:rgba(80,200,120,.35)}
+.msg.senior{margin-right:auto;background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.35)}
+.msg .meta{font-size:11px;opacity:.75;margin-top:6px}
+.composer{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
+#message-input{flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.35);color:var(--text)}
+.file-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:40px;border:1px dashed var(--border);border-radius:8px;color:var(--gold);cursor:pointer}
+.file-btn input{display:none}
+#send-button{background:linear-gradient(180deg,#58d686,#3bbf6b);border:1px solid rgba(80,200,120,.65);color:#041004;padding:0 16px;border-radius:8px;cursor:pointer;font-weight:700}
+#send-button:hover{filter:brightness(1.05)}
+.file-status{text-align:center;font-size:12px;padding-bottom:6px;color:var(--gold)}
+
+.messages img,.messages video,.messages audio{max-width:100%;border-radius:8px}
+
+/* message actions for senior admin (edit/delete) */
+.msg{position:relative;display:flex;flex-direction:column;gap:4px}
+.msg-body{position:relative;z-index:1}
+.msg-text{white-space:pre-wrap}
+.msg-actions{position:absolute;top:4px;right:6px;display:flex;gap:4px;opacity:1}
+.msg:hover .msg-actions{opacity:1}
+.senior-delete-btn,.senior-edit-btn{width:22px;height:22px;border-radius:50%;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;background:rgba(0,0,0,.45);color:var(--gold)}
+.senior-delete-btn{background:rgba(255,80,80,.18);border:1px solid rgba(255,80,80,.7)}
+.senior-edit-btn{background:rgba(80,200,120,.18);border:1px solid rgba(80,200,120,.7)}
+
+.users-toggle{display:none;margin-top:4px;padding:6px 10px;border-radius:8px;border:1px solid rgba(80,200,120,.5);background:rgba(80,200,120,.12);color:var(--gold);cursor:pointer;font-size:13px}
+.users-toggle:hover{background:rgba(80,200,120,.18)}
+
+.status-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);display:inline-block}
+.status-dot.online{background:#50c878}
+.status-dot.offline{background:#666}
+
+.quick-videos{padding:8px 10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.quick-video-btn{padding:6px 8px;border-radius:8px;border:1px solid rgba(212,175,55,.4);background:rgba(212,175,55,.12);color:var(--gold);cursor:pointer;font-size:12px;white-space:nowrap}
+.quick-video-btn:hover{background:rgba(212,175,55,.18)}
+
+/* templates button + modal */
+.templates-open-btn{width:40px;height:40px;border-radius:8px;border:1px solid rgba(212,175,55,.6);background:rgba(212,175,55,.12);color:var(--gold);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+.templates-open-btn:hover{background:rgba(212,175,55,.2)}
+
+.templates-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:80}
+.templates-modal.open{display:flex}
+
+.templates-dialog{width:100%;max-width:420px;background:var(--panel);border-radius:12px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,.6);overflow:hidden}
+.templates-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:700}
+.templates-close-btn{border:none;background:transparent;color:var(--text);cursor:pointer;font-size:16px}
+
+.templates-list{padding:10px 12px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.templates-list .template-btn{text-align:right;padding:8px 10px;border-radius:8px;border:1px solid rgba(212,175,55,.35);background:rgba(212,175,55,.08);color:var(--text);cursor:pointer;font-size:13px}
+.templates-list .template-btn:hover{background:rgba(212,175,55,.16)}
+
+@media (max-width: 900px){
+  .layout{grid-template-columns:1fr;position:relative}
+  .messages{height:55vh}
+  .users-toggle{display:inline-flex;align-items:center;gap:6px}
+  .users-panel{position:fixed;top:0;bottom:0;right:0;left:0;max-width:none;z-index:50;transform:translateX(100%);transition:transform .25s ease-out}
+  .arshad-admin.users-open .users-panel{transform:translateX(0)}
+}

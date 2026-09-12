@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحه اطلاعات</title>
+  <style>
+    body { font-family: tahoma, sans-serif; background: #0c0f14; color: #e6e6e6; margin: 0; }
+    .wrap { max-width: 920px; margin: 40px auto; padding: 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+    h1 { margin-top: 0; color: #8be9fd; font-size: 20px; }
+    h2 { color: #50fa7b; font-size: 16px; margin-top: 28px; }
+    p, li { line-height: 1.9; font-size: 14px; color: #c9d1d9; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { padding: 16px; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: rgba(0,0,0,0.25); }
+    a { color: #8be9fd; text-decoration: none; }
+    .muted { color: #94a3b8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>صفحه اطلاعات</h1>
+    <p class="muted">این صفحه شامل چند بخش راهنما و اطلاعات عمومی است.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h2>سوالات متداول</h2>
+        <ul>
+          <li>چگونه از بخش چت استفاده کنم؟ به صفحه اصلی مراجعه کنید.</li>
+          <li>مشکل صدا دارم، چه کار کنم؟ مرورگر را به‌روز کنید.</li>
+          <li>چگونه گزارش خطا ارسال کنم؟ از فرم بازخورد استفاده نمایید.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>راهنمای سریع</h2>
+        <p>برای بهترین تجربه از مرورگرهای به‌روز استفاده کنید. اینترنت پایدار توصیه می‌شود.</p>
+      </div>
+      <div class="card">
+        <h2>اخبار</h2>
+        <p>به‌زودی امکانات جدیدی اضافه خواهد شد. منتظر به‌روزرسانی‌ها باشید.</p>
+      </div>
+      <div class="card">
+        <h2>تماس با ما</h2>
+        <p>از طریق ایمیل یا فرم تماس داخل سایت می‌توانید با ما در ارتباط باشید.</p>
+      </div>
+    </div>
+
+    <p class="muted">© <span id="y"></span></p>
+  </div>
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>

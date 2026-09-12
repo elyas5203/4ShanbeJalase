@@ -1,0 +1,1262 @@
+<!-- views/arshad/terminal-arshad.ejs -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سیستم کاراگاه ارشد | پرونده سندروم</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap">
+  <style>
+    :root {
+      --primary: #1b1d1c;
+      --secondary: #242623;
+      --accent: #e4c491;
+      --accent-glow: rgba(228, 196, 145, 0.65);
+      --text-primary: #f6e2c2;
+      --text-secondary: #c0ae8b;
+      --success: #7bd69b;
+      --warning: #e8b35a;
+      --danger: #ff6b6b;
+      --terminal-bg: rgba(27, 29, 28, 0.95);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Vazirmatn', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #26231c 0%, #1b1d1c 45%, #11110f 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 46, 109, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    /* استایل کانتینر اصلی */
+    .cyber-terminal {
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
+      height: 100vh;
+      margin: 0 auto;
+      background: var(--terminal-bg);
+      border: 1px solid rgba(228, 196, 145, 0.22);
+      box-shadow:
+        0 0 30px rgba(228, 196, 145, 0.18),
+        inset 0 0 30px rgba(228, 196, 145, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cyber-terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(90deg, transparent 50%, rgba(228, 196, 145, 0.04) 50%),
+        linear-gradient(transparent 50%, rgba(228, 196, 145, 0.04) 50%);
+      background-size: 10px 10px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* هدر سایبری */
+    .cyber-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      background: rgba(27, 29, 28, 0.9);
+      border-bottom: 1px solid var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .logo i {
+      font-size: 1.8rem;
+      animation: pulse 3s infinite;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 20px;
+    }
+
+    .status-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .status-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .status-value {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--success);
+      text-shadow: 0 0 5px var(--success);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hologram-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--danger) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .hologram-avatar::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+      animation: hologram 4s infinite linear;
+    }
+
+    /* بخش اصلی چت */
+    .chat-hub {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* پنل کناری */
+    .cyber-sidebar {
+      width: 240px;
+      background: rgba(27, 29, 28, 0.8);
+      border-left: 1px solid rgba(228, 196, 145, 0.25);
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto; /* بازگشت اسکرول */
+    }
+
+    .panel {
+      background: rgba(27, 29, 28, 0.7);
+      border: 1px solid rgba(228, 196, 145, 0.26);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 0 10px rgba(228, 196, 145, 0.06);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    .case-progress {
+      margin-top: 10px;
+    }
+
+    .case-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .case-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(27, 29, 28, 0.8);
+      border: 1px solid rgba(228, 196, 145, 0.18);
+    }
+
+    .case-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .case-item.locked {
+      opacity: 0.7;
+      border-style: dashed;
+    }
+
+    .case-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .case-title i {
+      margin-left: 6px;
+      color: var(--text-secondary);
+    }
+
+    .case-meta {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .case-lock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(228, 196, 145, 0.18);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, rgba(228,196,145,0.7), rgba(228,196,145,1));
+      border-radius: 3px;
+      width: 80%;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .tool-btn {
+      background: rgba(228, 196, 145, 0.08);
+      border: 1px solid rgba(228, 196, 145, 0.26);
+      border-radius: 6px;
+      padding: 10px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+    }
+
+    .tool-btn:hover {
+      background: rgba(228, 196, 145, 0.18);
+      box-shadow: 0 0 10px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    /* منطقه چت */
+    .cyber-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .chat-display {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    /* اسکرول‌بار طلایی برای چت */
+    .chat-display { scrollbar-width: thin; scrollbar-color: #c8a56b rgba(228,196,145,0.08); }
+    .chat-display::-webkit-scrollbar { width: 10px; }
+    .chat-display::-webkit-scrollbar-track { background: rgba(228,196,145,0.08); border-left: 1px solid rgba(228,196,145,0.12); }
+    .chat-display::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e4c491, #c8a56b); border-radius: 8px; box-shadow: 0 0 10px rgba(228,196,145,0.4); }
+    .chat-display::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f0d7a8, #d1b07a); }
+
+    /* اسکرول‌بار سایدبار و صفحه به تم طلایی (رفع اسکرول سفید) */
+    html { scrollbar-width: thin; scrollbar-color: #c8a56b rgba(228,196,145,0.08); }
+    html::-webkit-scrollbar { width: 12px; }
+    html::-webkit-scrollbar-track { background: rgba(228,196,145,0.06); border-left: 1px solid rgba(228,196,145,0.12); }
+    html::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e4c491, #c8a56b); border-radius: 10px; box-shadow: 0 0 10px rgba(228,196,145,0.35); }
+    html::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f0d7a8, #d1b07a); }
+    body { scrollbar-width: thin; scrollbar-color: #c8a56b rgba(228,196,145,0.08); }
+    body::-webkit-scrollbar { width: 12px; }
+    body::-webkit-scrollbar-track { background: rgba(228,196,145,0.06); border-left: 1px solid rgba(228,196,145,0.12); }
+    body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e4c491, #c8a56b); border-radius: 10px; box-shadow: 0 0 10px rgba(228,196,145,0.35); }
+    body::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f0d7a8, #d1b07a); }
+
+    .cyber-sidebar { scrollbar-width: thin; scrollbar-color: #c8a56b rgba(228,196,145,0.08); }
+    .cyber-sidebar::-webkit-scrollbar { width: 10px; }
+    .cyber-sidebar::-webkit-scrollbar-track { background: rgba(228,196,145,0.08); border-left: 1px solid rgba(228,196,145,0.12); }
+    .cyber-sidebar::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e4c491, #c8a56b); border-radius: 8px; box-shadow: 0 0 10px rgba(228,196,145,0.4); }
+
+    #messages {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .message {
+      max-width: 66%;
+      padding: 15px 20px;
+      border-radius: 12px;
+      position: relative;
+      animation: messageAppear 0.4s ease-out;
+      backdrop-filter: blur(5px);
+    }
+    /* پیام‌های صوتی افقی‌تر و عریض‌تر (مانند پنل ادمین) */
+    .audio-msg { width: 100%; max-width: none !important; }
+    .audio-msg .message-header { margin-bottom: 8px; }
+    .audio-msg .message-content { width: 100%; }
+    .audio-msg .media-card { width: 100%; max-width: none; padding: 10px 12px; }
+    .audio-msg .media-audio { width: 100%; height: 64px; }
+
+    @keyframes messageAppear {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .detective-message {
+      align-self: flex-start;
+      background: rgba(228, 196, 145, 0.10);
+      border: 1px solid rgba(228, 196, 145, 0.35);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 0 15px rgba(228, 196, 145, 0.12);
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(228, 196, 145, 0.16) 0%, rgba(228, 196, 145, 0.26) 100%);
+      border: 1px solid rgba(228, 196, 145, 0.4);
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 0 15px rgba(228, 196, 145, 0.18);
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+    }
+
+    .message-sender {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .message-time {
+      color: var(--text-secondary);
+    }
+
+    .message-content {
+      line-height: 1.5;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    /* کارت رسانه‌ای برای ویس/ویدئو/عکس */
+    .media-card {
+      background: rgba(27, 29, 28, 0.82);
+      border: 1px solid rgba(228, 196, 145, 0.35);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 0 10px rgba(228, 196, 145, 0.08);
+      max-width: 600px; /* عریض‌تر برای نمایش بهتر پلی */
+    }
+    .media-card .media-title { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 6px; }
+    .media-audio { width: 100%; height: 52px; }
+    .media-video { width: 100%; max-height: 320px; border-radius: 8px; border: 1px solid rgba(228,196,145,0.25); background: #000; cursor: zoom-in; }
+    .media-image { width: 100%; border-radius: 8px; border: 1px solid rgba(228,196,145,0.25); cursor: zoom-in; }
+    .media-actions { margin-top: 8px; display: flex; gap: 12px; }
+    .media-actions a { color: var(--accent); font-size: 0.85rem; text-decoration: underline; }
+
+    .typing-indicator {
+      align-self: flex-start;
+      background: rgba(27, 29, 28, 0.7);
+      padding: 15px 20px;
+      border-radius: 12px;
+      border-bottom-left-radius: 4px;
+      display: flex;
+      gap: 8px;
+      border: 1px solid rgba(228, 196, 145, 0.35);
+      box-shadow: 0 0 10px rgba(228, 196, 145, 0.1);
+    }
+
+    .typing-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: typingAnimation 1.4s infinite ease-in-out;
+      box-shadow: 0 0 5px var(--accent-glow);
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    /* ورودی پیام */
+    .message-input-panel {
+      padding: 16px;
+      background: rgba(27, 29, 28, 0.9);
+      border-top: 1px solid rgba(228, 196, 145, 0.26);
+      box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-container {
+      display: flex;
+      gap: 15px;
+    }
+
+    .cyber-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid rgba(228, 196, 145, 0.35);
+      border-radius: 8px;
+      background: rgba(27, 29, 28, 0.7);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s;
+      box-shadow: 0 0 10px rgba(228, 196, 145, 0.08);
+      resize: none; /* ثابت نگه داشتن ارتفاع */
+      max-height: 120px;
+    }
+
+    .cyber-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .send-btn {
+      padding: 15px 25px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+    }
+
+    /* ابزارهای فعال */
+    .active-tool {
+      background: rgba(0, 243, 255, 0.3) !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 15px var(--accent-glow) !important;
+    }
+
+    /* پنل ابزار فعال */
+    .tool-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      height: 85%;
+      background: rgba(10, 10, 22, 0.95);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      box-shadow: 0 0 30px var(--accent-glow);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(21, 21, 40, 0.9);
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .tool-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .close-tool {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .close-tool:hover {
+      color: var(--danger);
+      transform: scale(1.1);
+    }
+
+    .tool-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    /* اسکرول طلایی برای پنل ابزار */
+    .tool-content { scrollbar-width: thin; scrollbar-color: #c8a56b rgba(228,196,145,0.08); }
+    .tool-content::-webkit-scrollbar { width: 10px; }
+    .tool-content::-webkit-scrollbar-track { background: rgba(228,196,145,0.08); border-left: 1px solid rgba(228,196,145,0.12); }
+    .tool-content::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #e4c491, #c8a56b); border-radius: 8px; box-shadow: 0 0 10px rgba(228,196,145,0.4); }
+    .tool-content::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f0d7a8, #d1b07a); }
+
+    /* کوچک‌سازی کلی سایدبار برای جا شدن محتوا */
+    .cyber-sidebar .panel { font-size: 0.92rem; }
+    .cyber-sidebar .case-meta { font-size: 0.76rem; }
+    .cyber-sidebar .panel-header { font-size: 0.86rem; }
+
+    /* جدول اطلاعات */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .info-table th, .info-table td {
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      padding: 10px;
+      text-align: right;
+    }
+
+    .info-table th {
+      background: rgba(0, 243, 255, 0.2);
+      color: var(--accent);
+    }
+
+    .info-table tr:nth-child(even) {
+      background: rgba(21, 21, 40, 0.5);
+    }
+
+    /* کارت اطلاعات */
+    .info-card {
+      background: rgba(21, 21, 40, 0.7);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .info-card h4 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    /* گالری تصاویر مدارک */
+    .evidence-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .evidence-item {
+      background: rgba(21, 21, 40, 0.8);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .evidence-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px var(--accent-glow);
+      border-color: var(--accent);
+    }
+
+    .evidence-image {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+    }
+
+    .evidence-caption {
+      padding: 10px;
+      font-size: 0.9rem;
+      text-align: center;
+      color: var(--text-primary);
+    }
+
+    /* مدال نمایش تصویر بزرگ */
+    .image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+
+    .modal-image {
+      max-width: 100%;
+      max-height: 100%;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* انیمیشن‌ها */
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    @keyframes hologram {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* واکنش‌گرا */
+    @media (max-width: 1024px) {
+      .cyber-sidebar {
+        width: 220px;
+      }
+
+      .status-grid {
+        grid-template-columns: repeat(2, auto);
+        gap: 15px;
+      }
+
+      .evidence-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cyber-sidebar {
+        display: none;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+
+      .status-grid {
+        display: none;
+      }
+
+      .tool-panel {
+        width: 95%;
+        height: 90%;
+      }
+
+      .evidence-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-terminal">
+    <!-- هدر سایبری -->
+    <div class="cyber-header">
+      <div class="logo">
+        <i class="fas fa-user-secret"></i>
+        <span>کاراگاه ارشد | پرونده سندروم</span>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-label">وضعیت پرونده</div>
+          <div class="status-value">فعال</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">کاراگاه</div>
+          <div class="status-value" id="detectiveStatusHeader" style="color: var(--danger);">مفقود</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">شواهد</div>
+          <div class="status-value">۳/۵</div>
+        </div>
+      </div>
+
+      <div class="user-profile">
+        <div class="hologram-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- بخش اصلی چت -->
+    <div class="chat-hub">
+      <!-- منطقه چت -->
+      <div class="cyber-chat">
+        <div class="chat-display" id="chatDisplay">
+          <!-- پیام‌ها اینجا توسط Socket.IO اضافه می‌شوند -->
+          <div id="messages"></div>
+        </div>
+
+        <!-- ورودی پیام -->
+        <div class="message-input-panel">
+          <div class="input-container">
+            <textarea class="cyber-input" id="messageInput" rows="1" placeholder="پیام خود را وارد کنید..."></textarea>
+            <button class="send-btn" id="sendButton">
+              <i class="fas fa-paper-plane"></i>
+              ارسال
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- پنل کناری -->
+      <div class="cyber-sidebar">
+        <div class="panel">
+          <div class="panel-header">
+            <i class="fas fa-folder-open"></i>
+            <span>پرونده‌ها</span>
+          </div>
+          <div class="case-list">
+            <div class="case-item active">
+              <div class="case-title">
+                <span>پرونده سندروم فراموشی</span>
+                <span class="case-lock-pill" style="color: var(--success); border-color: rgba(0, 255, 157, 0.6);">
+                  <i class="fas fa-circle"></i>
+                  فعال
+                </span>
+              </div>
+              <div class="case-meta">اولویت: بحرانی • وضعیت: در حال بررسی</div>
+              <div class="case-progress">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <span style="font-size: 0.8rem;">پیشرفت بررسی:</span>
+                  <span style="font-size: 0.8rem;">۸۰٪</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="case-item locked">
+              <div class="case-title">
+                <span>پرونده دهکده متروک</span>
+                <span class="case-lock-pill">
+                  <i class="fas fa-lock"></i>
+                  قفل شده
+                </span>
+              </div>
+              <div class="case-meta">شواهدی موجود میباشد که این پرونده به پرونده سندروم فراموشی مرتبط است.</div>
+            </div>
+
+            <div class="case-item locked">
+              <div class="case-title">
+                <span>دادگاه عدالت</span>
+                <span class="case-lock-pill">
+                  <i class="fas fa-lock"></i>
+                  قفل شده
+                </span>
+              </div>
+              <div class="case-meta">بعد از حل شدن دو پرونده باید نتایج به دادگاه عدالت ارسال شود.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <i class="fas fa-tools"></i>
+            <span>ابزارهای تحلیل پرونده</span>
+          </div>
+          <div class="tools-grid">
+            <button class="tool-btn" id="evidenceTool">
+              <i class="fas fa-fingerprint"></i>
+              <span>شواهد و مدارک</span>
+            </button>
+            <button class="tool-btn" id="symbolsTool">
+              <i class="fas fa-star-of-david"></i>
+              <span>نمادهای پیدا شده</span>
+            </button>
+            <button class="tool-btn" id="timelineTool">
+              <i class="fas fa-history"></i>
+              <span>گاه‌شمار پرونده</span>
+            </button>
+            <button class="tool-btn" id="medicalTool">
+              <i class="fas fa-microscope"></i>
+              <span>تحلیل پزشکی</span>
+            </button>
+            <button class="tool-btn" id="codesTool">
+              <i class="fas fa-key"></i>
+              <span>کدها و رمزها</span>
+            </button>
+            <button class="tool-btn" id="locationsTool">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>مکان‌های مهم</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <i class="fas fa-chart-bar"></i>
+            <span>وضعیت پرونده</span>
+          </div>
+          <div style="font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>نشانه‌های پیدا شده:</span>
+              <span>۳</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>معماهای حل شده:</span>
+              <span>۹</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>وضعیت کاراگاه:</span>
+              <span id="detectiveStatusPanel" style="color: var(--danger);">مفقود</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل شواهد و مدارک -->
+    <div class="tool-panel" id="evidencePanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-fingerprint"></i>
+          <span>شواهد و مدارک پرونده</span>
+        </div>
+        <button class="close-tool" id="closeEvidencePanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>شواهد جمع‌آوری شده تا هفته چهارم</h3>
+
+        <div class="info-card">
+          <h4>هفته اول:</h4>
+          <ul>
+            <li>مسیر حرکت کاراگاه: چپ، راست، چپ، راست</li>
+            <li>مأمور مخفی در پارک شناسایی شد</li>
+            <li>مکان آبمیوه‌فروشی: کنار قله اورست (X=12, Y=6)</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h4>هفته دوم:</h4>
+          <ul>
+            <li>کافی‌شاپ اورست - سفارش آبمیوه ۲ دلاری</li>
+            <li>مختصات زیر لیوان: منجر به کشف موزه شد</li>
+            <li>دزدی از موزه: گردنبند حضرت زهرا(س)</li>
+            <li>کد مسیر به آزمایشگاه: ۴۱۵۶</li>
+            <li>نمونه خون از صحنه جرم جمع‌آوری شد</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h4>هفته سوم:</h4>
+          <ul>
+            <li>بررسی نمونه خون در آزمایشگاه</li>
+            <li>شناسایی سلول‌های انار زیر میکروسکوپ</li>
+            <li>مرکز پست: کد مسیر ۶۵۱۳ یا X=2, Y=13</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h4>هفته چهارم:</h4>
+          <ul>
+            <li>کشف حدیث کسا به عنوان سومین نشانی</li>
+            <li>کاراگاه احساس کرد تحت تعقیب است</li>
+            <li>ارتباط با کاراگاه قطع شد - وضعیت: مفقود</li>
+          </ul>
+        </div>
+
+        <h3 style="margin-top: 30px;">گالری مدارک تصویری</h3>
+        <div class="evidence-gallery">
+          <div class="evidence-item" data-image="/images/photo1.jpg">
+            <img src="/images/photo1.jpg" alt="نقشه GPS" class="evidence-image">
+            <div class="evidence-caption">نقشه مسیر حرکت</div>
+          </div>
+          <div class="evidence-item" data-image="/images/photo2.jpg">
+            <img src="/images/photo2.jpg" alt="موزه" class="evidence-image">
+            <div class="evidence-caption">عکس موزه</div>
+          </div>
+          <div class="evidence-item" data-image="/images/photo3.jpg">
+            <img src="/images/photo3.jpg" alt="دیکشنری سلول‌ها" class="evidence-image">
+            <div class="evidence-caption">دیکشنری سلول‌ها</div>
+          </div>
+          <div class="evidence-item" data-image="/images/photo4.jpg">
+            <img src="/images/photo4.jpg" alt="منوی کافی شاپ" class="evidence-image">
+            <div class="evidence-caption">منوی کافی شاپ اورست</div>
+          </div>
+          <div class="evidence-item" data-image="/images/photo5.jpg">
+            <img src="/images/photo5.jpg" alt="نمونه خون" class="evidence-image">
+            <div class="evidence-caption">نمونه خون زیر میکروسکوپ</div>
+          </div>
+          <div class="evidence-item" data-image="/images/photo6.jpg">
+            <img src="/images/photo6.jpg" alt="نامه‌های حدیث کسا" class="evidence-image">
+            <div class="evidence-caption">نامه‌های حدیث کسا</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل نمادهای پیدا شده -->
+    <div class="tool-panel" id="symbolsPanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-star-of-david"></i>
+          <span>نمادهای مرتبط با حضرت زهرا(س)</span>
+        </div>
+        <button class="close-tool" id="closeSymbolsPanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>نشانه‌های پیدا شده تا هفته چهارم</h3>
+
+        <div class="info-card">
+          <h4>۱. گردنبند حضرت زهرا(س)</h4>
+          <p>این نماد در هفته دوم کشف شد زمانی که از موزه دزدیده شده بود. داستان این گردنبند مربوط به بخشش حضرت زهرا(س) است که در کتاب بحارالانوار آمده است.</p>
+          <p><strong>وضعیت:</strong> در اختیار کاراگاه - برای آزمایش به آزمایشگاه منتقل شده</p>
+        </div>
+
+        <div class="info-card">
+          <h4>۲. انار</h4>
+          <p>این نماد در هفته سوم کشف شد زمانی که نمونه خون زیر میکروسکوپ بررسی شد و سلول‌های انار شناسایی شدند. انار حدود ۱۲ سال است که در شهرها نایاب شده است.</p>
+          <p><strong>وضعیت:</strong> در حال بررسی ارتباط با سندروم</p>
+        </div>
+
+        <div class="info-card">
+          <h4>۳. حدیث کسا</h4>
+          <p>این نماد در هفته چهارم کشف شد. کاراگاه از طریق تحلیل نامه‌ها و پیدا کردن قسمت‌های متفاوت آنها، موفق به کشف این حدیث شد.</p>
+          <p><strong>وضعیت:</strong> سومین نشانی کشف شده</p>
+        </div>
+
+        <div class="info-card">
+          <h4>نشانی‌های باقی‌مانده:</h4>
+          <p>هنوز نشانی‌های دیگری باید پیدا شوند تا پرونده کامل شود. به نظر می‌رسد سندروم قصد نابودی همه نمادهای حضرت زهرا(س) را دارد.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل گاهشمار -->
+    <div class="tool-panel" id="timelinePanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-history"></i>
+          <span>گاه‌شمار پرونده سندروم</span>
+        </div>
+        <button class="close-tool" id="closeTimelinePanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>توالی رویدادهای پرونده</h3>
+
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>هفته</th>
+              <th>رویداد</th>
+              <th>کشفیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>اول</td>
+              <td>شروع پرونده، پیدا کردن مسیر</td>
+              <td>مختصات آبمیوه‌فروشی، ملاقات با مأمور مخفی</td>
+            </tr>
+            <tr>
+              <td>دوم</td>
+              <td>کشف کافی‌شاپ اورست و موزه</td>
+              <td>گردنبند به عنوان اولین نشانی، کد مسیر ۴۱۵۶</td>
+            </tr>
+            <tr>
+              <td>سوم</td>
+              <td>بررسی نمونه خون در آزمایشگاه</td>
+              <td>انار به عنوان دومین نشانی، کد مرکز پست ۶۵۱۳</td>
+            </tr>
+            <tr>
+              <td>چهارم</td>
+              <td>کشف حدیث کسا</td>
+              <td>حدیث کسا به عنوان سومین نشانی، کاراگاه مفقود شد</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-card" style="margin-top: 20px;">
+          <h4>وضعیت فعلی:</h4>
+          <p>کاراگاه دستگیر شده و کاراگاه ارشد مسئولیت پرونده را به عهده گرفته است. سه نشانی از نشانی‌های حضرت زهرا(س) کشف شده‌اند. کاراگاه اصلی در هفته چهارم مفقود شده است.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل تحلیل پزشکی -->
+    <div class="tool-panel" id="medicalPanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-microscope"></i>
+          <span>تحلیل پزشکی سندروم</span>
+        </div>
+        <button class="close-tool" id="closeMedicalPanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>یافته‌های پزشکی پرونده</h3>
+
+        <div class="info-card">
+          <h4>نمونه خون کاراگاه:</h4>
+          <p>بررسی زیر میکروسکوپ نشان داد که سلول‌های خون شکل انار دارند. این یک نشانه بیولوژیکی از تأثیر سندروم است.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>سندروم:</h4>
+          <p>یک بیماری مرموز که قصد نابودی نمادهای حضرت زهرا(س) را دارد. این بیماری باعث تغییرات سلولی غیرعادی می‌شود.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>درمان:</h4>
+          <p>هنوز درمان قطعی برای سندروم پیدا نشده است، اما دکتر آزمایشگاه در حال تحقیق بر روی نمونه‌ها است.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>ارتباط با نمادها:</h4>
+          <p>به نظر می‌رسد سندروم مستقیماً به نمادهای حضرت زهرا(س) مرتبط است. نابودی هر نماد باعث پیشرفت بیماری می‌شود.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل کدها و رمزها -->
+    <div class="tool-panel" id="codesPanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-key"></i>
+          <span>کدها و رمزهای پرونده</span>
+        </div>
+        <button class="close-tool" id="closeCodesPanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>کدهای کشف شده در پرونده</h3>
+
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>کد</th>
+              <th>منبع</th>
+              <th>کاربرد</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>چپ راست چپ راست</td>
+              <td>مسیر حرکت هفته اول</td>
+              <td>پیدا کردن مأمور مخفی در پارک</td>
+            </tr>
+            <tr>
+              <td>X=12, Y=6</td>
+              <td>نقشه هفته اول</td>
+              <td>پیدا کردن آبمیوه‌فروشی کنار قله اورست</td>
+            </tr>
+            <tr>
+              <td>۴۱۵۶</td>
+              <td>مسیر موزه به آزمایشگاه</td>
+              <td>خواندن اعداد با ذره‌بین در مسیر</td>
+            </tr>
+            <tr>
+              <td>۶۵۱۳</td>
+              <td>مرکز پست</td>
+              <td>پیدا کردن مسیر با موجودی ۲۵ هزار تومان</td>
+            </tr>
+            <tr>
+              <td>X=2, Y=13</td>
+              <td>مرکز پست</td>
+              <td>مختصات جایگزین برای مرکز پست</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-card" style="margin-top: 20px;">
+          <h4>کدهای باقی‌مانده:</h4>
+          <p>هنوز کدهای بیشتری باید کشف شوند تا پرونده کامل شود. به نظر می‌رسد ارتباطی بین کدهای فعلی وجود دارد.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- پنل مکان‌های مهم -->
+    <div class="tool-panel" id="locationsPanel">
+      <div class="tool-header">
+        <div class="tool-title">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>مکان‌های مهم پرونده</span>
+        </div>
+        <button class="close-tool" id="closeLocationsPanel">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="tool-content">
+        <h3>مکان‌های کشف شده در پرونده سندروم</h3>
+
+        <div class="info-card">
+          <h4>شهر مشهد:</h4>
+          <p>مکان شروع تحقیقات پرونده سندروم.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>پارک:</h4>
+          <p>محل ملاقات با مأمور مخفی در هفته اول.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>آبمیوه‌فروشی کنار قله اورست:</h4>
+          <p>مختصات: X=12, Y=6 - محل سفارش آبمیوه ۲ دلاری.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>کافی‌شاپ اورست:</h4>
+          <p>محل دریافت سرنخ بعدی در هفته دوم.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>موزه:</h4>
+          <p>محل دزدی گردنبند حضرت زهرا(س) در هفته دوم.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>آزمایشگاه:</h4>
+          <p>محل بررسی نمونه خون و کشف سلول‌های انار در هفته سوم.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>مرکز پست:</h4>
+          <p>مختصات: X=2, Y=13 - محل حادثه آتش‌سوزی در هفته سوم.</p>
+        </div>
+
+        <div class="info-card">
+          <h4>سوپرمارکت:</h4>
+          <p>آخرین مکان شناخته شده کاراگاه قبل از مفقود شدن در هفته چهارم.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- مدال نمایش تصویر بزرگ (برای گالری ابزار) -->
+    <div class="image-modal" id="imageModal">
+      <div class="modal-content">
+        <button class="close-modal" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+        <img src="" alt="" class="modal-image" id="modalImage">
+      </div>
+    </div>
+    <!-- لایت‌باکس چت برای بزرگ‌نمایی تصویر/ویدیو -->
+    <div class="image-modal" id="chatLightbox" style="display:none;">
+      <div class="modal-content" style="max-width:96%;">
+        <button class="close-modal" id="closeChatLightbox"><i class="fas fa-times"></i></button>
+        <img src="" alt="" class="modal-image" id="lightboxImage" style="display:none;">
+        <video id="lightboxVideo" class="media-video" style="display:none; max-height:80vh;" controls preload="metadata"></video>
+      </div>
+    </div>
+  </div>
+
+  <script id="arshad_boot" type="application/json"><%- JSON.stringify({ userId: userId, username: username || null }) %></script>
+  <script>
+    (function(){
+      try {
+        var el = document.getElementById('arshad_boot');
+        var boot = JSON.parse((el && el.textContent) || '{}');
+        window.ARSHAD_USER_ID = boot.userId;
+        window.ARSHAD_USERNAME = boot.username || null;
+      } catch(_) {
+        window.ARSHAD_USER_ID = 0;
+        window.ARSHAD_USERNAME = null;
+      }
+    })();
+  </script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/arshad-terminal-client.js"></script>
+</body>
+</html>

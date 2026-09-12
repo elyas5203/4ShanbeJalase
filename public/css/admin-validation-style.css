@@ -1,0 +1,17 @@
+/* public/css/admin-validation-style.css */
+body { font-family: sans-serif; margin: 0; background: #f0f2f5; }
+.tabs { display: flex; border-bottom: 1px solid #ccc; }
+.tab { padding: 10px 15px; cursor: pointer; }
+.tab.active { border-bottom: 2px solid blue; }
+.dossier { border: 1px solid #ccc; margin-top: 1rem; padding: 1rem; background: #fff; }
+.documents-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+.document-card { border: 1px solid #ddd; padding: 0.5rem; background: #fff; }
+.document-card img { max-width: 150px; cursor: zoom-in; display: block; }
+
+/* States */
+.document-card { position: relative; }
+.document-card.approved { border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,0.15) inset; }
+.document-card.rejected { border-color: #ef4444; filter: grayscale(20%); box-shadow: 0 0 0 2px rgba(239,68,68,0.12) inset; }
+.doc-status { position: absolute; bottom: 6px; left: 6px; font-size: 11px; padding: 2px 6px; border-radius: 6px; color: #fff; }
+.doc-status.approved { background: #16a34a; }
+.doc-status.rejected { background: #ef4444; }

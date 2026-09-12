@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mission Map</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-container { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .log { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 4px solid #007bff; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .test-users { display: flex; gap: 10px; flex-wrap: wrap; }
+        .user-card { background: #e9ecef; padding: 15px; border-radius: 8px; min-width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Mission Map & Chat History</h1>
+    
+    <div class="test-container">
+        <h3>Test Users</h3>
+        <div class="test-users">
+            <div class="user-card">
+                <h4>گروه ۱ (ID: 6)</h4>
+                <p>🎯 Stage: 3 | ✅ Completed: [1, 2]</p>
+                <p>💬 Has test messages</p>
+                <button onclick="testUser(6, 'گروه ۱')">Test Login</button>
+            </div>
+            
+            <div class="user-card">
+                <h4>گروه ۲ (ID: 7)</h4>
+                <p>🎯 Stage: 1 | ✅ Completed: []</p>
+                <p>💬 No messages</p>
+                <button onclick="testUser(7, 'گروه ۲')">Test Login</button>
+            </div>
+            
+            <div class="user-card">
+                <h4>تیم آلفا (ID: 8)</h4>
+                <p>🎯 Stage: 5 | ✅ Completed: [1, 2, 3, 4]</p>
+                <p>💬 No messages</p>
+                <button onclick="testUser(8, 'تیم آلفا')">Test Login</button>
+            </div>
+            
+            <div class="user-card">
+                <h4>کلاس ۵ب (ID: 9)</h4>
+                <p>🎯 Stage: 1 | ✅ Completed: []</p>
+                <p>💬 No messages</p>
+                <button onclick="testUser(9, 'کلاس ۵ب')">Test Login</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>Quick Access</h3>
+        <button onclick="window.open('/', '_blank')">🏠 Main Page</button>
+        <button onclick="window.open('/admin', '_blank')">⚙️ Admin Panel</button>
+        <button onclick="window.open('/debug', '_blank')">🔧 Debug Page</button>
+    </div>
+    
+    <div class="test-container">
+        <h3>Expected Features</h3>
+        <div class="log">
+            <strong>✅ Chat History Loading:</strong> Users should see their previous messages immediately after login
+        </div>
+        <div class="log">
+            <strong>✅ Mission Map:</strong> Interactive SVG map with 13 stages showing current progress
+        </div>
+        <div class="log">
+            <strong>✅ Stage Visualization:</strong>
+            <ul>
+                <li>🔒 Gray circles = Locked stages</li>
+                <li>✅ Green circles = Completed stages</li>
+                <li>🎯 Blue pulsing circle = Current active stage</li>
+                <li>🔗 Green lines = Progress connections</li>
+            </ul>
+        </div>
+        <div class="log">
+            <strong>✅ Interactive Elements:</strong> Click on any stage circle to see stage info
+        </div>
+    </div>
+
+    <script>
+        function testUser(userId, username) {
+            // Create a form and submit to test login
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/login';
+            form.target = '_blank';
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'username';
+            input.value = username;
+            
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+            
+            console.log(`Testing login for ${username} (ID: ${userId})`);
+        }
+        
+        // Auto-test with گروه ۱ after 2 seconds
+        setTimeout(() => {
+            console.log('Auto-testing گروه ۱ with mission map...');
+            testUser(6, 'گروه ۱');
+        }, 2000);
+    </script>
+</body>
+</html>

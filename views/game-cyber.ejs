@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 CYBER DETECTIVE - <%= username %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Floating Particles Background -->
+    <div class="particles-container" id="particles-container"></div>
+    
+    <div class="hud-container">
+        <!-- Left Panel - Mission Map -->
+        <div class="left-panel glass-panel">
+            <h2 class="neon-text">🎯 STELLAR MISSION MAP</h2>
+            <div class="mission-map-container">
+                <svg id="mission-map" width="100%" height="100%" viewBox="0 0 300 400">
+                    <!-- Mission stages will be dynamically added here -->
+                </svg>
+            </div>
+        </div>
+
+        <!-- Right Panel - Chat -->
+        <div class="right-panel glass-panel">
+            <div class="chat-header glass-panel">
+                <div class="detective-badge">🤖</div>
+                <h2 class="neon-text">AGENT <%= username.toUpperCase() %></h2>
+                <div class="status-info">
+                    <span class="status-indicator"></span>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+            </div>
+            
+            <div id="chat-container">
+                <div id="message-list"></div>
+                <form id="chat-form">
+                    <textarea id="message-input" class="cyber-input" autocomplete="off" 
+                              placeholder="TRANSMIT YOUR MESSAGE..." rows="3"></textarea>
+                    <div class="chat-buttons">
+                        <input type="file" id="file-input" accept="image/*,video/*" style="display: none;">
+                        <button type="button" id="file-button" class="cyber-btn cyber-btn-primary" title="UPLOAD FILE">📎</button>
+                        <button type="submit" class="cyber-btn cyber-btn-success">SEND</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="image-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="modal-image" src="" alt="Full size image">
+        </div>
+    </div>
+
+    <!-- User data for JavaScript -->
+    <script>
+        const userId = <%= userId %>;
+        const username = "<%= username %>";
+        const gameState = <%- JSON.stringify(gameState) %>;
+        console.log('AGENT CONNECTED:', { userId, username, gameState });
+        
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 60;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+    
+    <!-- Socket.IO Client Library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/game-client.js"></script>
+</body>
+</html>

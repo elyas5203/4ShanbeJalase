@@ -1,0 +1,83 @@
+<!-- views/admin/arshad.ejs -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مرکز کارآگاه ارشد</title>
+  <link rel="stylesheet" href="/css/admin-arshad.css" />
+</head>
+<body>
+  <div class="arshad-admin">
+    <header class="header">
+      <div>
+        <h1>مرکز کارآگاه ارشد</h1>
+      </div>
+      <button id="toggle-users" class="users-toggle">👥 لیست کاربران</button>
+    </header>
+
+    <main class="layout">
+      <aside class="users-panel">
+        <div class="panel-head">
+          <strong>کاربران</strong>
+          <span id="users-count" class="badge">0</span>
+        </div>
+        <button class="users-close" type="button">✕ بستن</button>
+        <div id="users-list" class="users-list"></div>
+        <div id="quick-video-container" class="quick-videos">
+          <button class="quick-video-btn" data-file-url="/video/move/move11.mp4" data-file-name="فیلم ۱۱" data-file-type="video/mp4">📹 فیلم ۱۱</button>
+          <button class="quick-video-btn" data-file-url="/video/move/move12.mp4" data-file-name="فیلم ۱۲" data-file-type="video/mp4">📹 فیلم ۱۲</button>
+          <button class="quick-video-btn" data-file-url="/video/move/move13.mp4" data-file-name="فیلم ۱۳" data-file-type="video/mp4">📹 فیلم ۱۳</button>
+          <button class="quick-video-btn" data-file-url="/media/voice" data-file-name="ویس راهنما" data-file-type="audio/mpeg">🎧 ویس راهنما</button>
+        </div>
+      </aside>
+
+      <section class="chat-panel">
+        <div id="chat-info" class="chat-info">یک کاربر را از لیست انتخاب کنید</div>
+        <div id="messages" class="messages"></div>
+        <form id="chat-form" class="composer" autocomplete="off">
+          <button id="templates-open" type="button" class="templates-open-btn" title="پیام‌های آماده">📝</button>
+          <input id="message-input" type="text" placeholder="پیام به کاربر..." />
+          <label class="file-btn">📎<input id="file-input" type="file" accept="image/*,video/*,audio/*" /></label>
+          <button id="send-button" type="submit">ارسال</button>
+        </form>
+        <div id="file-status" class="file-status"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="templates-modal" class="templates-modal">
+    <div class="templates-dialog">
+      <div class="templates-header">
+        <span>پیام‌های آماده</span>
+        <button id="templates-close" type="button" class="templates-close-btn">✕</button>
+      </div>
+      <div class="templates-list">
+        <button type="button" class="template-btn">سلام به دستیاران حرفه ای کارگاه
+حتما پیامم به دستتون رسیده که الان اینجایین
+ ببخشید اگه برای ورود یکمی اذیت شدین من باید مطمعن میشدم که این پیام بدست گروه سندروم نرسیده 
+خب دیگه ، وقت نداریم
+من در منطقه خاورمیانه در نزدیکی شما فقط ۳ مامور عملیاتی دارم از همین ۳ نفر  درخواست کمک کردم تا مکان مخفیگاه گروه سندروم رو شناسایی کنن و وارد عمل بشن</button>
+        <button type="button" class="template-btn">ما مکان نهایی این گروه رو پیدا کردیم و سه روز هست که مدام در حال رصد هستیم و امروز قرار هست با کمک شما عملیات آغاز کنیم.</button>
+        <button type="button" class="template-btn">نیرو های عملیات به یک در با قفل ۸ کارکتری رسیدن 
+همانطور که گفتم من فقط ۳ نفر از نیروهای عملیاتی رو در منطقه خاورمیانه در اختیار دارم 
+و متاسفانه نیروی IT یا همون هکرمون در کشور استرالیا در حال عملیات هست و نمیتونیم در رو باز کنیم
+بین شما کسی هست که کمکمون کنه ؟
+این احتمال وجود داره که این رمز رو شما توی پرونده هایی که به دستتون رسیده در اختیار داشته باشین</button>
+        <button type="button" class="template-btn">رمز درست بود ما وارد شدیم 
+آفرین به شما</button>
+        <button type="button" class="template-btn">توی جیب کاراگاه همونطور که دیدید کلمه دکتر آزمایشگاه نوشته شده بود 
+فکر میکنم اسراری که بهش نیاز داشتیم دست آقای دکتر باشه 
+اگه چیزی به دست آوردم براتون ارسال میکنم.</button>
+        <button type="button" class="template-btn">من با دکتر آزمایشگاه صحبت کردم، درمان سندروم پیدا شده، دکتر گفت درمان سندروم به رمز ۴۱۵۶۶۵۱۳ ارتباط داره... همون رمز و کلید در
+ که اگه حروفش کنار هم بزارین میشه ...؟؟
+ 
+امام زمان </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/admin-arshad-client.js"></script>
+</body>
+</html>

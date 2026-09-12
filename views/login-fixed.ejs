@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 CYBER DETECTIVE ACCESS</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--cyber-darker);
+            color: var(--cyber-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cyber-login-container {
+            background: var(--cyber-glass);
+            backdrop-filter: var(--cyber-blur);
+            -webkit-backdrop-filter: var(--cyber-blur);
+            border: 1px solid var(--cyber-glass-border);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: var(--cyber-shadow);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s ease-out;
+        }
+        
+        .cyber-login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--cyber-primary) 20%,
+                var(--cyber-accent) 50%, 
+                var(--cyber-primary) 80%,
+                transparent 100%);
+            opacity: 0.8;
+            animation: border-scan 2s infinite;
+        }
+        
+        .cyber-login-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--cyber-secondary) 20%,
+                var(--cyber-warning) 50%, 
+                var(--cyber-secondary) 80%,
+                transparent 100%);
+            opacity: 0.6;
+            animation: border-scan 2s infinite reverse;
+        }
+        
+        .cyber-title {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: var(--cyber-primary);
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 
+                0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 30px currentColor;
+            animation: neon-flicker 3s infinite alternate;
+        }
+        
+        .cyber-subtitle {
+            color: var(--cyber-accent);
+            margin-bottom: 40px;
+            font-size: 14px;
+            opacity: 0.8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .cyber-form-group {
+            margin-bottom: 30px;
+            text-align: right;
+            position: relative;
+        }
+        
+        .cyber-label {
+            display: block;
+            margin-bottom: 12px;
+            color: var(--cyber-primary);
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .cyber-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--cyber-glass-border);
+            border-radius: 12px;
+            color: var(--cyber-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+            box-sizing: border-box;
+        }
+        
+        .cyber-input:focus {
+            outline: none;
+            border-color: var(--cyber-primary);
+            box-shadow: 
+                0 0 15px rgba(0, 255, 255, 0.3),
+                inset 0 0 10px rgba(0, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .cyber-input::placeholder {
+            color: rgba(0, 255, 255, 0.5);
+            font-style: italic;
+        }
+        
+        .cyber-login-btn {
+            background: var(--cyber-glass);
+            backdrop-filter: blur(8px);
+            border: 2px solid var(--cyber-primary);
+            border-radius: 12px;
+            color: var(--cyber-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 16px 32px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .cyber-login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(0, 255, 255, 0.3) 50%,
+                transparent 100%);
+            transition: left 0.5s ease;
+            z-index: 1;
+        }
+        
+        .cyber-login-btn:hover {
+            border-color: var(--cyber-accent);
+            color: #ffffff;
+            box-shadow: 
+                0 0 25px rgba(0, 255, 255, 0.6),
+                0 0 50px rgba(0, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .cyber-login-btn:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-login-btn:active {
+            transform: translateY(-1px);
+            animation: glitch-click 0.2s ease;
+        }
+        
+        .cyber-error {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--cyber-danger);
+            color: var(--cyber-danger);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            animation: error-pulse 2s infinite;
+        }
+        
+        @keyframes neon-flicker {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px currentColor,
+                    0 0 20px currentColor,
+                    0 0 30px currentColor;
+            }
+            50% {
+                text-shadow: 
+                    0 0 5px currentColor,
+                    0 0 10px currentColor,
+                    0 0 15px currentColor;
+            }
+        }
+        
+        @keyframes border-scan {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes glitch-click {
+            0%, 100% { transform: translateY(-1px); }
+            25% { transform: translateY(-1px) skew(2deg); }
+            50% { transform: translateY(-2px) skew(-2deg); }
+            75% { transform: translateY(-1px) skew(1deg); }
+        }
+        
+        @keyframes error-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .tilt-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        
+        .access-code {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: var(--cyber-accent);
+            opacity: 0.6;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .system-status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 12px;
+            color: var(--cyber-primary);
+            opacity: 0.7;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyber-accent);
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles Background -->
+    <div class="particles-container" id="particles-container"></div>
+    
+    <!-- Access Code Display -->
+    <div class="access-code">ACCESS_CODE: CYB3R-D3T3CT1V3</div>
+    
+    <!-- System Status -->
+    <div class="system-status">
+        SYSTEM STATUS: ONLINE
+        <span class="status-indicator"></span>
+    </div>
+    
+    <div class="tilt-container">
+        <div class="cyber-login-container" id="loginContainer">
+            <h1 class="cyber-title">CYBER DETECTIVE</h1>
+            <p class="cyber-subtitle">SECURE ACCESS TERMINAL</p>
+            
+            <% if (typeof error !== 'undefined') { %>
+                <div class="cyber-error">⚠️ ACCESS DENIED: <%= error %></div>
+            <% } %>
+            
+            <form action="/login" method="POST" id="loginForm">
+                <div class="cyber-form-group">
+                    <label for="username" class="cyber-label">AGENT IDENTIFIER:</label>
+                    <input type="text" id="username" name="username" class="cyber-input" required 
+                           placeholder="ENTER YOUR CODENAME...">
+                </div>
+                
+                <button type="submit" class="cyber-login-btn" id="loginBtn">
+                    INITIATE ACCESS PROTOCOL
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/cyber-loading.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // 3D Tilt Effect
+        function initTiltEffect() {
+            const container = document.getElementById('loginContainer');
+            
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const deltaX = (e.clientX - centerX) / (rect.width / 2);
+                const deltaY = (e.clientY - centerY) / (rect.height / 2);
+                
+                const rotateX = deltaY * -10;
+                const rotateY = deltaX * 10;
+                
+                container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                container.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+        
+        // Enhanced form submission with loading animation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('loginBtn');
+            const username = document.getElementById('username').value.trim();
+            
+            if (!username) {
+                alert('⚠️ AGENT IDENTIFIER REQUIRED');
+                return;
+            }
+            
+            // Start visual effects
+            btn.classList.add('glitch-effect');
+            btn.innerHTML = 'PROCESSING...';
+            btn.classList.add('scanline-effect');
+            
+            // Create and start loading screen
+            const loader = new CyberLoader();
+            loader.createLoadingScreen();
+            
+            // Simulate loading process
+            setTimeout(() => {
+                loader.simulate();
+            }, 500);
+            
+            // Submit form after loading animation
+            setTimeout(() => {
+                // Create hidden form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/login';
+                form.style.display = 'none';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'username';
+                input.value = username;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }, 4000);
+        });
+        
+        // Initialize effects
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            initTiltEffect();
+        });
+    </script>
+</body>
+</html>

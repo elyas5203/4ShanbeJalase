@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راز سندروم</title>
+    <link rel="icon" href="/assets/favicon-detective.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0f14;
+            color: #d1d5db;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #f3f4f6;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(107, 114, 128, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .date {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            direction: rtl;
+        }
+
+        .paragraph {
+            margin-bottom: 20px;
+            text-align: justify;
+            color: #e6f1ff;
+        }
+
+        .highlight { color: #ffb8b8; font-weight: bold; }
+
+        .continue-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(75, 0, 130, 0.4);
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(75, 0, 130, 0.6);
+        }
+
+        .continue-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .mystery-box {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mystery-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .author-info {
+            text-align: left;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .quote-box { background: rgba(107, 114, 128, 0.1); border-right: 4px solid #8a2be2; border-radius: 8px 0 0 8px; padding: 20px; margin: 30px 0; font-style: italic; color: #9ca3af; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .content {
+                font-size: 1rem;
+            }
+        }
+        .overlay { position: fixed; inset: 0; z-index: 1000; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity .35s ease; }
+        .overlay .beam { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; border-radius: 50%; border: 2px dashed rgba(118,255,230,0.35); filter: drop-shadow(0 0 18px rgba(118,255,230,0.35)); animation: spin 3.6s linear infinite; }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .blackout { position: fixed; inset: 0; background: #000; z-index: 1002; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">پرونده هسته ربوده‌شده</h1>
+            <p class="subtitle">تحقیقی پیرامون «سندروم فراموشی» و یک انشعاب فراموش‌شده</p>
+            <p class="date">منبع: اسناد بازیابی‌شده از آرشیو مرکزی</p>
+        </div>
+
+        <div class="content">
+            <p class="paragraph">
+                یک ناهنجاری در حال گسترش است. پدیده‌ای که آن را <span class="highlight">«سندروم فراموشی»</span> می‌نامند، در سکوت در حال بازنویسی حافظه جمعی است. مبتلایان، اصول بنیادین و حقایق اولیه را فراموش می‌کنند و نسخه‌ای مخدوش از واقعیت را حقیقت می‌پندارند. این یک بیماری نیست؛ یک <span class="highlight">انحراف سیستماتیک</span> است.
+            </p>
+
+            <div class="quote-box">
+                <p>
+                    «این سیستم قرار بود از یک <span class="highlight">منبع نور واحد</span> پیروی کند. اما یک انشعاب ناگهانی — یک پروتکل ثانویه — همه چیز را تغییر داد. حالا همه به نوری ضعیف‌تر نگاه می‌کنند و فکر می‌کنند این همان خورشید است...»
+                </p>
+                <p style="text-align: right; margin-top: 10px;">ناظر سیستم: بخشی از گزارش حذف شده است</p>
+            </div>
+
+            <p class="paragraph">
+                اکنون گروهی از کارآگاهان مستقل تلاش می‌کنند با کسانی ارتباط بگیرند که حافظه‌شان هنوز به‌طور کامل بازنویسی نشده است. آن‌ها به دنبال کسانی هستند که هنوز می‌توانند <span class="highlight">نور اصلی</span> را از سایه‌های آن تشخیص دهند. اگر این سند به دست شما رسیده، یعنی شما یکی از آن‌ها هستید.
+            </p>
+        </div>
+
+        <div class="btn-container">
+            <a href="/login" class="continue-btn">ادامه مطلب...</a>
+        </div>
+
+        <div class="author-info">
+            <p>هشدار: این سند ممکن است حاوی اطلاعات طبقه‌بندی شده باشد.</p>
+        </div>
+    </div>
+
+    <div class="overlay"><div class="beam"></div></div>
+    <div class="blackout"></div>
+
+    <script>
+        // افکت‌های بصری برای جذابیت بیشتر
+        document.addEventListener('DOMContentLoaded', function() {
+            // انیمیشن ورود صفحه
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 1s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+
+            // افکت موس برای highlight ها
+            const highlights = document.querySelectorAll('.highlight');
+            highlights.forEach(highlight => {
+                highlight.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                
+                highlight.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            const link = document.querySelector('.continue-btn');
+            const overlay = document.querySelector('.overlay');
+            const blackout = document.querySelector('.blackout');
+            function startCinematic(anchor){
+                const REDIRECT_URL = (anchor && anchor.getAttribute('href')) || '/login';
+                const SCENE_DURATION = 5200;
+                const canvas = document.createElement('canvas');
+                canvas.className = 'webgl';
+                Object.assign(canvas.style, { position:'fixed', inset:'0', width:'100%', height:'100%', display:'block', zIndex:'1' });
+                document.body.appendChild(canvas);
+                try { overlay.style.opacity = '1'; } catch(_) {}
+                try { setTimeout(()=>{ blackout.style.opacity = '0.85'; }, 3800); } catch(_) {}
+                setTimeout(()=>{ try { if (!window.__cin_done) window.location.href = REDIRECT_URL; } catch(_) { window.location.href = REDIRECT_URL; } }, SCENE_DURATION + 200);
+
+                function loadThree(urls, onok, onfail){
+                    const u = urls.shift();
+                    if (!u) { onfail(); return; }
+                    const s = document.createElement('script');
+                    s.src = u; s.async = true;
+                    s.onload = onok;
+                    s.onerror = () => loadThree(urls, onok, onfail);
+                    document.head.appendChild(s);
+                }
+                if (window.THREE) boot();
+                else loadThree([
+                    'https://unpkg.com/three@0.160.0/build/three.min.js',
+                    'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js'
+                ], ()=> boot(), ()=> {/* degrade to CSS-only, redirect handled above */});
+
+                function boot(){
+                      try {
+                        const DPR = Math.min(2, window.devicePixelRatio || 1);
+                        const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference:'high-performance' });
+                        renderer.setPixelRatio(DPR);
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                        const rt = new THREE.WebGLRenderTarget(window.innerWidth * DPR, window.innerHeight * DPR, { depthBuffer:false, stencilBuffer:false });
+
+                        const scene = new THREE.Scene();
+                        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+                        camera.position.z = 3.2;
+                        const palette = { neon:new THREE.Color(0x64fff2), magenta:new THREE.Color(0xff2ee3), deep:new THREE.Color(0x08131b) };
+                        renderer.setClearColor(palette.deep, 1);
+
+                        const PARTICLES = 180000;
+                        const geom = new THREE.BufferGeometry();
+                        const positions = new Float32Array(PARTICLES * 3);
+                        const targets = new Float32Array(PARTICLES * 3);
+                        const seeds = new Float32Array(PARTICLES);
+                        const colors = new Float32Array(PARTICLES * 3);
+
+                        const sample = sampleTextPoints('SECURE LOGIN', 740, 220, PARTICLES * 0.45);
+                        const targetPoints = sample.points;
+                        const spread = 1.8;
+                        for (let i=0;i<PARTICLES;i++){
+                          positions[i*3+0] = (Math.random()-0.5) * spread;
+                          positions[i*3+1] = (Math.random()-0.5) * spread;
+                          positions[i*3+2] = (Math.random()-0.5) * spread;
+                          if (i < targetPoints.length){
+                            const p = targetPoints[i];
+                            targets[i*3+0] = p.x; targets[i*3+1] = p.y; targets[i*3+2] = (Math.random()-0.5) * 0.05;
+                          } else {
+                            const a = Math.random()*Math.PI*2, r=0.8+Math.random()*0.7, z=(Math.random()-0.5)*0.15;
+                            targets[i*3+0] = Math.cos(a)*r*0.6; targets[i*3+1] = Math.sin(a)*r*0.6; targets[i*3+2] = z;
+                          }
+                          seeds[i] = Math.random();
+                          const c = lerpColor(palette.neon, palette.magenta, Math.random()*0.8);
+                          colors[i*3+0]=c.r; colors[i*3+1]=c.g; colors[i*3+2]=c.b;
+                        }
+                        geom.setAttribute('position', new THREE.BufferAttribute(positions,3));
+                        geom.setAttribute('target', new THREE.BufferAttribute(targets,3));
+                        geom.setAttribute('seed', new THREE.BufferAttribute(seeds,1));
+                        geom.setAttribute('color', new THREE.BufferAttribute(colors,3));
+
+                        const uniforms = { uTime:{value:0}, uPhase:{value:0}, uVortex:{value:0}, uShock:{value:0}, uWarp:{value:0}, uSize:{value:3.0*DPR}, uAlpha:{value:1.0} };
+                        const mat = new THREE.ShaderMaterial({ transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, uniforms,
+                          vertexShader:`attribute vec3 target; attribute float seed; attribute vec3 color; varying vec3 vColor; varying float vAlpha; uniform float uTime,uPhase,uVortex,uShock,uWarp,uSize; float easeInOut(float x){return x<0.5?4.0*x*x*x:1.0-pow(-2.0*x+2.0,3.0)/2.0;} float sat(float x){return clamp(x,0.0,1.0);} void main(){ vec3 pos=position; float attract=sat(uPhase*1.35); float k=easeInOut(attract); pos=mix(pos,target,k); pos.xy+=vec2(sin(seed*134.0+uTime*4.0),cos(seed*91.0+uTime*5.0))*0.0025*(0.3+uPhase); float vGain=sat(uVortex); vec2 toCenter=-pos.xy*0.9; pos.xy+=toCenter*vGain; pos.z-=(0.15+length(pos.xy)*0.08)*vGain; float spin=vGain*(0.6+0.4*sin(uTime*1.7)); float s=sin(spin), c=cos(spin); pos.xy=mat2(c,-s,s,c)*pos.xy; float shock=uShock; float r=length(pos.xy); float push=smoothstep(0.0,1.0,shock)*smoothstep(0.0,0.8,r)*0.25; pos.xy+=normalize(pos.xy+1e-5)*push; float warp=uWarp; pos.z-=warp*(0.7+r*0.5); float bd=warp*0.15; pos.xy*=(1.0+bd*r*r); vColor=color; float alphaBase=0.6+0.4*sin(seed*100.0+uTime*3.0); vAlpha=alphaBase*(0.3+0.7*(0.2+attract*0.8)); vec4 mv=modelViewMatrix*vec4(pos,1.0); gl_Position=projectionMatrix*mv; gl_PointSize=uSize*(1.0+1.5*sat(vGain)+1.0*warp)/max(0.3,-mv.z); }`,
+                          fragmentShader:`precision highp float; varying vec3 vColor; varying float vAlpha; void main(){ vec2 uv=gl_PointCoord-0.5; float d=length(uv); float soft=smoothstep(0.5,0.0,d); vec3 col=vColor; float core=smoothstep(0.12,0.0,d); col+=vec3(0.8,0.1,1.0)*core*0.4; col+=vec3(0.05,0.1,0.12)*soft*0.6; float a=vAlpha*soft; gl_FragColor=vec4(col,a);} `});
+                        const points = new THREE.Points(geom, mat); scene.add(points);
+
+                        const beams = new THREE.Group(); scene.add(beams);
+                        for(let i=0;i<6;i++){ const r=0.03+Math.random()*0.03, h=3.6+Math.random()*0.8; const geo=new THREE.CylinderGeometry(r,r*0.7,h,16,1,true); const bMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uTime:{value:0},uPulse:{value:0},uCol:{value:new THREE.Color(0x76ffe6)}},vertexShader:`uniform float uTime; uniform float uPulse; varying float vH; varying vec3 vN; void main(){ vH=position.y; vN=normal; vec3 p=position; p.x+=sin((position.y*0.8+uTime*2.0))*0.005*uPulse; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }`,fragmentShader:`precision highp float; varying float vH; varying vec3 vN; uniform vec3 uCol; uniform float uPulse; uniform float uTime; float fresnel(vec3 n){ return pow(1.0-abs(n.z),2.0);} void main(){ float f=fresnel(normalize(vN))*(0.5+0.5*sin(uTime*3.0)); float scan=0.6*smoothstep(0.0,1.0,sin(vH*3.0+uTime*6.0)*0.5+0.5); vec3 col=uCol*(0.45*f+0.55*scan)*(0.3+0.7*uPulse); gl_FragColor=vec4(col,0.28);} `}); const m=new THREE.Mesh(geo,bMat); const a=(i/6)*Math.PI*2+Math.random()*0.2; const R=0.6+Math.random()*0.35; m.position.set(Math.cos(a)*R,Math.sin(a)*R,-0.4-Math.random()*0.3); beams.add(m); m.onBeforeRender=(_,__,___,____,material)=>{ material.uniforms.uTime.value=performance.now()/1000; material.uniforms.uPulse.value=timeline.pulse; }; }
+
+                        const postScene=new THREE.Scene(); const postCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+                        const postUniforms={ uTex:{value:rt.texture}, uTime:{value:0}, uAberration:{value:0}, uGlitch:{value:0}, uScan:{value:0}, uShock:{value:0}, uWarp:{value:0}, uResolution:{value:new THREE.Vector2(window.innerWidth*DPR, window.innerHeight*DPR)} };
+                        const postMat=new THREE.ShaderMaterial({ uniforms:postUniforms, vertexShader:'varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.0); }', fragmentShader:`precision highp float; varying vec2 vUv; uniform sampler2D uTex; uniform float uTime,uAberration,uGlitch,uScan,uShock,uWarp; uniform vec2 uResolution; float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453);} float noise(vec2 p){ vec2 i=floor(p), f=fract(p); float a=hash(i), b=hash(i+vec2(1,0)); float c=hash(i+vec2(0,1)), d=hash(i+vec2(1,1)); vec2 u=f*f*(3.0-2.0*f); return mix(a,b,u.x)+(c-a)*u.y*(1.0-u.x)+(d-b)*u.x*u.y; } void main(){ vec2 uv=vUv; vec2 d=uv-0.5; float r2=dot(d,d); uv+=d*(uWarp*0.12*r2); float hgl=uGlitch*step(0.97, fract(noise(vec2(uTime*1.3, uv.y*40.0))))*0.015; uv.x+=hgl*(hash(vec2(uv.y,uTime))*2.0-1.0); vec2 dir=normalize(vec2(0.8,0.2)); vec2 oR=uv+dir*uAberration; vec2 oG=uv; vec2 oB=uv-dir*uAberration; vec3 col; col.r=texture2D(uTex,oR).r; col.g=texture2D(uTex,oG).g; col.b=texture2D(uTex,oB).b; float scan=sin((uv.y+uTime*0.5)*uResolution.y*0.015)*0.04*uScan; col+=vec3(scan); float rr=length(uv-0.5); float ring=smoothstep(0.15,0.0, abs(rr-(0.12+uShock*0.35))); col+=vec3(0.2,0.05,0.35)*ring*0.65; float vig=smoothstep(0.98,0.55,rr); col*=vec3(vig); col+=pow(max(col-0.65,0.0), vec3(2.0))*0.3; gl_FragColor=vec4(clamp(col,0.0,1.0),1.0); }`});
+                        const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2), postMat); postScene.add(quad);
+
+                        const timeline={ start:0, running:false, pulse:0, play(){ if(this.running) return; this.running=true; this.start=performance.now(); overlay.style.transition='opacity .35s ease'; overlay.style.opacity='1'; const articleEl=document.querySelector('.container'); if (articleEl){ articleEl.style.transition='transform .35s ease, opacity .35s ease, filter .35s ease'; articleEl.style.transform='translateY(-12px)'; articleEl.style.opacity='0.88'; articleEl.style.filter='contrast(1.12) saturate(1.05)'; } } };
+
+                        function render(now){ const t=(now - timeline.start)*0.001; uniforms.uTime.value=t; postUniforms.uTime.value=t; if (timeline.running){ const phase=clamp01(remap(t,0.0,0.7)); const vortex=clamp01(remap(t,0.7,1.8)); const scan=clamp01(remap(t,1.2,2.6)); const shock=clamp01(remap(t,2.6,3.9)); const warp=clamp01(remap(t,3.9,4.8)); const jump=clamp01(remap(t,4.8,5.2)); uniforms.uPhase.value=phase; uniforms.uVortex.value=vortex; uniforms.uShock.value=shock*easeInOut(shock); uniforms.uWarp.value=warp + jump*0.6; postUniforms.uAberration.value=0.008+0.02*warp+0.03*jump; postUniforms.uGlitch.value=0.2*phase+0.25*vortex+0.2*shock+0.35*warp; postUniforms.uScan.value=scan*(0.7+0.3*Math.sin(t*2.0)); postUniforms.uShock.value=shock; postUniforms.uWarp.value=warp + jump*0.8; timeline.pulse=0.2+0.8*Math.sin(t*3.0)*(0.3+0.7*scan); if (t>3.6 && blackout.style.opacity!=='0.85'){ blackout.style.opacity='0.85'; } if (t>=SCENE_DURATION/1000){ window.location.href=REDIRECT_URL; return; } }
+                          renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, camera); renderer.setRenderTarget(null); renderer.render(postScene, postCam); requestAnimationFrame(render); }
+                        requestAnimationFrame(render);
+                        function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+                        function remap(t,a,b){ return (t-a)/Math.max(1e-5,(b-a)); }
+                        function easeInOut(x){ return x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2; }
+                        function lerpColor(c1,c2,k){ return new THREE.Color().setRGB(c1.r+(c2.r-c1.r)*k, c1.g+(c2.g-c1.g)*k, c1.b+(c2.b-c1.b)*k); }
+                        function sampleTextPoints(text,w,h,count){ const cvs=document.createElement('canvas'); cvs.width=w; cvs.height=h; const ctx=cvs.getContext('2d'); ctx.fillStyle='#000'; ctx.fillRect(0,0,w,h); ctx.font='bold 140px Consolas, monospace'; ctx.textAlign='center'; ctx.textBaseline='middle'; const grad=ctx.createLinearGradient(0,0,w,h); grad.addColorStop(0,'#76ffe6'); grad.addColorStop(1,'#ff2ee3'); ctx.fillStyle=grad; ctx.shadowColor='rgba(118,255,230,0.4)'; ctx.shadowBlur=24; ctx.fillText(text,w/2,h/2); const img=ctx.getImageData(0,0,w,h).data; const pts=[]; for(let y=0;y<h;y+=2){ for(let x=0;x<w;x+=2){ const idx=(y*w+x)*4; const a=img[idx+3]; if (a>90){ if (Math.random()<0.5) continue; const nx=(x/w)*2-1; const ny=(y/h)*2-1; pts.push({ x:nx*0.9, y:-ny*0.35 }); if (pts.length>=count) break; } } if (pts.length>=count) break; } return { points: pts }; }
+                        timeline.play();
+                        window.addEventListener('resize', ()=>{ renderer.setSize(window.innerWidth, window.innerHeight); camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); postUniforms.uResolution.value.set(window.innerWidth*DPR, window.innerHeight*DPR); rt.setSize(window.innerWidth*DPR, window.innerHeight*DPR); });
+                      } catch (err) {
+                        /* degrade to CSS-only; redirect is timed above */
+                      }
+                    }
+            }
+            if (link && overlay && blackout) {
+                link.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); startCinematic(this); }, { once: true });
+                document.addEventListener('click', function(e){ const a = e.target.closest('.continue-btn'); if (!a) return; e.preventDefault(); e.stopImmediatePropagation(); startCinematic(a); }, true);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+/* ============================================
+   CYBER DETECTIVE - COMPLETE UI REDESIGN
+   Advanced Cyberpunk Theme with Glassmorphism
+   ============================================ */
+
+/* Import Cyber Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400&family=Orbitron:wght@400;700;900&display=swap');
+
+/* CSS Variables for Cyber Theme */
+:root {
+    --cyber-primary: #00ffff;
+    --cyber-secondary: #ff0080;
+    --cyber-accent: #00ff41;
+    --cyber-warning: #ffaa00;
+    --cyber-danger: #ff3366;
+    --cyber-dark: #0a0a0a;
+    --cyber-darker: #050505;
+    --cyber-glass: rgba(255, 255, 255, 0.08);
+    --cyber-glass-hover: rgba(255, 255, 255, 0.12);
+    --cyber-glass-border: rgba(0, 255, 255, 0.25);
+    --cyber-shadow: 0 8px 32px rgba(0, 255, 255, 0.15);
+    --cyber-glow: 0 0 20px rgba(0, 255, 255, 0.4);
+    --cyber-glow-strong: 0 0 30px rgba(0, 255, 255, 0.8);
+    --cyber-blur: blur(12px);
+}
+
+/* Global Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Share Tech Mono', monospace;
+    background: var(--cyber-darker);
+    color: var(--cyber-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.6;
+}
+
+/* Floating Particles Background */
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: 
+        radial-gradient(ellipse at top left, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at top right, rgba(255, 0, 128, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(0, 255, 65, 0.03) 0%, transparent 50%),
+        linear-gradient(135deg, var(--cyber-darker) 0%, #0d1421 25%, #1a0d21 50%, #0d1421 75%, var(--cyber-darker) 100%);
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--cyber-primary);
+    border-radius: 50%;
+    animation: float-up 15s infinite linear;
+    opacity: 0;
+    box-shadow: 0 0 4px currentColor;
+}
+
+.particle:nth-child(2n) {
+    background: var(--cyber-accent);
+    animation-duration: 20s;
+    width: 1px;
+    height: 1px;
+}
+
+.particle:nth-child(3n) {
+    background: var(--cyber-secondary);
+    animation-duration: 25s;
+    width: 3px;
+    height: 3px;
+}
+
+.particle:nth-child(5n) {
+    background: var(--cyber-warning);
+    animation-duration: 18s;
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0) rotate(0deg);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1) rotate(45deg);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(10vh) scale(1) rotate(315deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10vh) scale(0) rotate(360deg);
+    }
+}
+
+/* Glassmorphism Base Classes */
+.glass-panel {
+    background: var(--cyber-glass);
+    backdrop-filter: var(--cyber-blur);
+    -webkit-backdrop-filter: var(--cyber-blur);
+    border: 1px solid var(--cyber-glass-border);
+    border-radius: 16px;
+    box-shadow: var(--cyber-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--cyber-primary) 20%,
+        var(--cyber-accent) 50%, 
+        var(--cyber-primary) 80%,
+        transparent 100%);
+    opacity: 0.6;
+    animation: border-scan 3s infinite;
+}
+
+@keyframes border-scan {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+.glass-panel-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+    background: var(--cyber-glass-hover);
+    border-color: var(--cyber-primary);
+    box-shadow: var(--cyber-glow);
+    transform: translateY(-2px);
+}
+
+/* Cyber Button System */
+.cyber-btn {
+    background: var(--cyber-glass);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--cyber-glass-border);
+    border-radius: 8px;
+    color: var(--cyber-primary);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 255, 255, 0.2) 20%,
+        rgba(0, 255, 255, 0.4) 50%,
+        rgba(0, 255, 255, 0.2) 80%,
+        transparent 100%);
+    transition: left 0.5s ease;
+    z-index: 1;
+}
+
+.cyber-btn:hover {
+    border-color: var(--cyber-primary);
+    box-shadow: var(--cyber-glow);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.cyber-btn:hover::before {
+    left: 100%;
+}
+
+.cyber-btn:active {
+    transform: translateY(0);
+    animation: glitch-click 0.1s ease;
+}
+
+@keyframes glitch-click {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(0) skew(1deg); }
+    50% { transform: translateY(-1px) skew(-1deg); }
+    75% { transform: translateY(0) skew(0.5deg); }
+}
+
+/* Cyber Button Variants */
+.cyber-btn-primary {
+    border-color: var(--cyber-primary);
+    color: var(--cyber-primary);
+}
+
+.cyber-btn-primary:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+}
+
+.cyber-btn-danger {
+    border-color: var(--cyber-danger);
+    color: var(--cyber-danger);
+}
+
+.cyber-btn-danger:hover {
+    box-shadow: 0 0 25px rgba(255, 51, 102, 0.6);
+}
+
+.cyber-btn-success {
+    border-color: var(--cyber-accent);
+    color: var(--cyber-accent);
+}
+
+.cyber-btn-success:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.6);
+}
+
+/* Cyber Input System */
+.cyber-input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--cyber-glass-border);
+    border-radius: 8px;
+    color: var(--cyber-primary);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 12px 16px;
+    width: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.cyber-input:focus {
+    outline: none;
+    border-color: var(--cyber-primary);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.cyber-input::placeholder {
+    color: rgba(0, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.cyber-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cyber-input::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.cyber-input::-webkit-scrollbar-thumb {
+    background: var(--cyber-primary);
+    border-radius: 3px;
+    opacity: 0.6;
+}
+
+.cyber-input::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
+}
+
+/* 3D Tilt Effect */
+.tilt-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.tilt-element {
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+}
+
+/* Scanline Animation */
+@keyframes scanline {
+    0% { transform: translateY(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+}
+
+.scanline-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--cyber-primary) 50%, 
+        transparent 100%);
+    animation: scanline 1s ease-in-out;
+    z-index: 10;
+}
+
+/* Glitch Effect */
+@keyframes glitch {
+    0%, 100% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
+    10% {
+        transform: translate(-2px, 2px);
+        filter: hue-rotate(90deg);
+    }
+    20% {
+        transform: translate(-1px, -1px);
+        filter: hue-rotate(180deg);
+    }
+    30% {
+        transform: translate(1px, 2px);
+        filter: hue-rotate(270deg);
+    }
+    40% {
+        transform: translate(1px, -1px);
+        filter: hue-rotate(360deg);
+    }
+    50% {
+        transform: translate(-1px, 2px);
+        filter: hue-rotate(0deg);
+    }
+    60% {
+        transform: translate(-1px, 1px);
+        filter: hue-rotate(90deg);
+    }
+    70% {
+        transform: translate(0px, 1px);
+        filter: hue-rotate(180deg);
+    }
+    80% {
+        transform: translate(1px, 0px);
+        filter: hue-rotate(270deg);
+    }
+    90% {
+        transform: translate(1px, 2px);
+        filter: hue-rotate(360deg);
+    }
+}
+
+.glitch-effect {
+    animation: glitch 0.3s ease-in-out;
+}
+
+/* Neon Glow Effects */
+.neon-text {
+    color: var(--cyber-primary);
+    text-shadow: 
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px currentColor,
+        0 0 20px currentColor;
+    animation: neon-flicker 2s infinite alternate;
+}
+
+@keyframes neon-flicker {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px currentColor,
+            0 0 10px currentColor,
+            0 0 15px currentColor,
+            0 0 20px currentColor;
+    }
+    50% {
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 5px currentColor,
+            0 0 8px currentColor,
+            0 0 12px currentColor;
+    }
+}
+
+.neon-box {
+    box-shadow: 
+        0 0 10px var(--cyber-primary),
+        0 0 20px var(--cyber-primary),
+        0 0 30px var(--cyber-primary),
+        inset 0 0 10px rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--cyber-primary);
+}
+
+/* Loading Animation */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--cyber-darker);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.loading-container.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.decryption-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 24px;
+    color: var(--cyber-primary);
+    text-align: center;
+    margin-bottom: 30px;
+    min-height: 30px;
+    text-shadow: 0 0 10px currentColor;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 4px;
+    background: rgba(0, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, 
+        var(--cyber-primary) 0%, 
+        var(--cyber-accent) 50%, 
+        var(--cyber-primary) 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px var(--cyber-primary);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.p-1 { padding: 0.5rem; }
+.p-2 { padding: 1rem; }
+.p-3 { padding: 1.5rem; }
+.p-4 { padding: 2rem; }
+
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cyber-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+    
+    .cyber-input {
+        font-size: 12px;
+        padding: 10px 14px;
+    }
+    
+    .decryption-text {
+        font-size: 18px;
+    }
+    
+    .loading-bar {
+        width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cyber-btn {
+        padding: 8px 16px;
+        font-size: 11px;
+    }
+    
+    .cyber-input {
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+    
+    .decryption-text {
+        font-size: 16px;
+    }
+    
+    .loading-bar {
+        width: 200px;
+    }
+}

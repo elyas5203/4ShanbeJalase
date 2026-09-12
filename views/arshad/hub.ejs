@@ -1,0 +1,28 @@
+<!-- views/arshad/hub.ejs -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مرکز فرماندهی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/arshad-hub-style.css">
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+
+    <div class="ui-container">
+        <button id="action-button" class="btn">اجرای انیمیشن</button>
+        <!-- پنل‌های شیشه‌ای در مراحل بعدی اینجا اضافه خواهند شد -->
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="/js/arshad-hub-client.js"></script>
+</body>
+</html>

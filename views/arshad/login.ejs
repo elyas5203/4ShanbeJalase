@@ -1,0 +1,53 @@
+<!-- views/arshad/login.ejs -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>احراز هویت | مرکز فرماندهی</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+    <link rel="stylesheet" href="/css/arshad-login-style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <div id="tsparticles-bg"></div>
+
+    <div class="main-container v2-auth">
+        <div id="scan-panel" class="panel">
+            <div class="scanner-window">
+                <video id="camera-feed" autoplay playsinline></video>
+                <canvas id="snapshot-canvas" style="display:none;"></canvas>
+                <div id="scan-line" class="scan-line"></div>
+            </div>
+            <div class="scan-controls">
+                <button id="scan-camera-btn" class="btn">اسکن مدرک جدید</button>
+                <label class="btn">آپلود از فایل<input type="file" id="upload-file-input" accept="image/*" style="display:none;"></label>
+                <button id="scan-sfx-toggle" class="btn">SFX: روشن</button>
+            </div>
+        </div>
+
+        <div class="dossier-panel panel">
+            <h3>پرونده هویتی</h3>
+            <div id="dossier-gallery" class="dossier-gallery"></div>
+            <div class="submission-section">
+                <input type="text" id="access-code" placeholder="کد دسترسی">
+                <button id="submit-dossier-btn" class="btn primary">ارسال پرونده برای تایید</button>
+            </div>
+            <p id="status-message"></p>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    <script type="module">
+      import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/postprocessing/RenderPass.js';
+      import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+      import { FilmPass } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/postprocessing/FilmPass.js';
+      window.THREE_POST = { EffectComposer, RenderPass, UnrealBloomPass, FilmPass };
+    </script>
+    <script src="/js/arshad-login-client.js"></script>
+</body>
+</html>

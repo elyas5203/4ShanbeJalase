@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تست سکانس هک</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+        }
+        
+        .test-button {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            color: #ff0000;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        .info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔴 تست سکانس سینمایی هک</h1>
+    
+    <div class="info">
+        <h3>📋 دستورالعمل تست:</h3>
+        <p>1. فایل‌های مدیا را در پوشه <code>/public/assets/media/</code> قرار دهید</p>
+        <p>2. روی دکمه زیر کلیک کنید تا سکانس شروع شود</p>
+        <p>3. یا از کلیدهای میانبر <kbd>Ctrl + Shift + H</kbd> استفاده کنید</p>
+    </div>
+    
+    <button class="test-button" onclick="startHackSequence()">
+        🚀 شروع سکانس هک
+    </button>
+    
+    <div class="info">
+        <h3>📁 فایل‌های مورد نیاز:</h3>
+        <ul style="text-align: right; display: inline-block;">
+            <li><strong>ajir.wav</strong> - صدای آژیر (18 ثانیه)</li>
+            <li><strong>khande.mp3</strong> - صدای خنده (11 ثانیه)</li>
+            <li><strong>gerogangiri.MP4</strong> - ویدیوی گروگان‌گیری</li>
+        </ul>
+    </div>
+
+    <!-- Include the hack sequence HTML and CSS -->
+    <div id="hackSequenceOverlay" class="hack-sequence-overlay">
+        <!-- مرحله خطر و آژیر -->
+        <div id="dangerStage" class="danger-stage">
+            <div class="danger-vignette"></div>
+            <div class="danger-noise"></div>
+            <div class="danger-skull">☠ DANGER ☠</div>
+            <div id="dangerText1" class="danger-text">⚠ خطر حمله سایبری — سیستم امن نیست ⚠</div>
+            <div id="dangerText2" class="danger-text" style="bottom: 7vh;">🚨 هشدار: نفوذ به سامانه امن 🚨</div>
+            <div id="dangerText3" class="danger-text" style="bottom: 4vh;">⚡ مراقب باشید... ⚡</div>
+        </div>
+
+        <!-- انیمیشن CRT خاموشی -->
+        <div id="crtShutdown" class="crt-shutdown"></div>
+
+        <!-- مرحله پیام ترسناک -->
+        <div id="scaryMessageStage" class="scary-message-stage">
+            <div id="scaryText" class="scary-text"></div>
+        </div>
+
+        <!-- مرحله ترمینال -->
+        <div id="terminalStage" class="terminal-stage">
+            <div class="hack-terminal">
+                <div class="terminal-header">🔴 SYSTEM COMPROMISED - UNAUTHORIZED ACCESS DETECTED 🔴</div>
+                <div id="terminalContent" class="terminal-content"></div>
+                <span id="terminalCursor" class="terminal-cursor"></span>
+                <div id="videoContainer" style="display: none; text-align: center; margin: 20px 0;">
+                    <video id="hackVideo" class="hack-video" controls>
+                        <source src="/assets/media/gerogangiri.MP4" type="video/mp4">
+                        مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Copy all hack sequence styles here */
+        .hack-sequence-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 99999;
+            display: none;
+            overflow: hidden;
+        }
+
+        .hack-sequence-overlay.show {
+            display: block;
+        }
+
+        .danger-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .danger-stage.show {
+            opacity: 1;
+        }
+
+        .danger-skull {
+            font-size: 8vw;
+            color: #ff1e2d;
+            text-shadow: 0 0 20px #ff1e2d, 0 0 40px #ff1e2d;
+            animation: heartbeat 1s infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            20% { transform: scale(1.2); }
+            40% { transform: scale(0.9); }
+            60% { transform: scale(1.15); }
+        }
+
+        .danger-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 30, 45, 0.6) 0%, rgba(0, 0, 0, 0.9) 100%);
+            animation: vignettePulse 1s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes vignettePulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .danger-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.03) 2px,
+                rgba(255, 255, 255, 0.03) 4px
+            );
+            opacity: 0.15;
+            animation: noise 0.1s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes noise {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-4px); }
+        }
+
+        .danger-text {
+            position: absolute;
+            bottom: 10vh;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff1e2d;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            font-family: 'Share Tech Mono', monospace;
+            animation: textGlitch 0.5s infinite;
+        }
+
+        .danger-text.show {
+            opacity: 1;
+        }
+
+        @keyframes textGlitch {
+            0%, 100% { transform: translateX(-50%) skew(0deg); }
+            20% { transform: translateX(-50%) skew(1deg); }
+            40% { transform: translateX(-50%) skew(-1deg); }
+            60% { transform: translateX(-50%) skew(0.5deg); }
+            80% { transform: translateX(-50%) skew(-0.5deg); }
+        }
+
+        .crt-shutdown {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            opacity: 0;
+        }
+
+        .crt-shutdown.active {
+            opacity: 1;
+            animation: crtShutdown 3s ease-out forwards;
+        }
+
+        @keyframes crtShutdown {
+            0% {
+                transform: scaleY(1) scaleX(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scaleY(0.1) scaleX(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scaleY(0.01) scaleX(0.01);
+                opacity: 0;
+            }
+        }
+
+        .scary-message-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .scary-message-stage.show {
+            opacity: 1;
+        }
+
+        .scary-text {
+            font-size: 2rem;
+            color: #ff1e2d;
+            text-shadow: 0 0 20px #ff1e2d;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            animation: scaryGlow 2s infinite;
+        }
+
+        @keyframes scaryGlow {
+            0%, 100% { 
+                text-shadow: 0 0 20px #ff1e2d;
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 0 0 30px #ff1e2d, 0 0 40px #ff1e2d;
+                transform: scale(1.05);
+            }
+        }
+
+        .terminal-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .terminal-stage.show {
+            opacity: 1;
+        }
+
+        .hack-terminal {
+            width: 90%;
+            max-width: 800px;
+            height: 80%;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            overflow-y: auto;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.5),
+                inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        .terminal-header {
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #ff6b6b;
+        }
+
+        .terminal-content {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: #00ff00;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hack-video {
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin: 1rem 0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+    </style>
+
+    <script>
+        // Copy hack sequence functions here
+        let hackSequenceActive = false;
+        let currentAudio = null;
+
+        function startHackSequence() {
+            if (hackSequenceActive) return;
+            
+            console.log('🔴 شروع سکانس هک...');
+            hackSequenceActive = true;
+            
+            const overlay = document.getElementById('hackSequenceOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+                executeHackSequence();
+            }
+        }
+
+        async function executeHackSequence() {
+            console.log('⏰ اجرای سکانس با زمان‌بندی دقیق...');
+            
+            // مرحله 1: سکوت مطلق (0-2 ثانیه)
+            await sleep(2000);
+            
+            // مرحله 2: آژیر + اسکلت (2-6 ثانیه)
+            console.log('🚨 شروع آژیر و نمایش خطر...');
+            playAudio('/assets/media/ajir.wav', 0.8);
+            showDangerStage();
+            await sleep(4000);
+            
+            // مرحله 3: متن اول (6-9 ثانیه)
+            console.log('📝 نمایش متن خطر اول...');
+            showDangerText('dangerText1');
+            await sleep(3000);
+            
+            // مرحله 4: متن دوم (9-12 ثانیه)
+            console.log('📝 نمایش متن خطر دوم...');
+            showDangerText('dangerText2');
+            await sleep(3000);
+            
+            // مرحله 5: متن سوم (12-18 ثانیه)
+            console.log('📝 نمایش متن خطر سوم...');
+            showDangerText('dangerText3');
+            await sleep(6000);
+            
+            // مرحله 6: قطع آژیر + انیمیشن CRT (18-21 ثانیه)
+            console.log('📺 انیمیشن خاموشی CRT...');
+            stopCurrentAudio();
+            await showCRTShutdown();
+            
+            // مرحله 7: سکوت + پیام ترسناک (21-32 ثانیه)
+            console.log('😈 پخش خنده و پیام ترسناک...');
+            playAudio('/assets/media/khande.mp3', 0.9);
+            await showScaryMessage();
+            
+            // مرحله 8: ترمینال (32+ ثانیه)
+            console.log('💻 نمایش ترمینال هکر...');
+            await showTerminalStage();
+        }
+
+        function showDangerStage() {
+            const dangerStage = document.getElementById('dangerStage');
+            if (dangerStage) {
+                dangerStage.classList.add('show');
+            }
+        }
+
+        function showDangerText(textId) {
+            const textElement = document.getElementById(textId);
+            if (textElement) {
+                textElement.classList.add('show');
+            }
+        }
+
+        async function showCRTShutdown() {
+            return new Promise((resolve) => {
+                const crtShutdown = document.getElementById('crtShutdown');
+                const dangerStage = document.getElementById('dangerStage');
+                
+                if (crtShutdown && dangerStage) {
+                    dangerStage.classList.remove('show');
+                    crtShutdown.classList.add('active');
+                    
+                    setTimeout(() => {
+                        crtShutdown.classList.remove('active');
+                        resolve();
+                    }, 3000);
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        async function showScaryMessage() {
+            return new Promise(async (resolve) => {
+                const scaryStage = document.getElementById('scaryMessageStage');
+                const scaryText = document.getElementById('scaryText');
+                
+                if (scaryStage && scaryText) {
+                    scaryStage.classList.add('show');
+                    
+                    const message = "کنترل سیستم شما الان در دست منه";
+                    await typeText(scaryText, message, 100);
+                    
+                    setTimeout(() => {
+                        scaryStage.classList.remove('show');
+                        resolve();
+                    }, 1000);
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        async function showTerminalStage() {
+            const terminalStage = document.getElementById('terminalStage');
+            const terminalContent = document.getElementById('terminalContent');
+            
+            if (terminalStage && terminalContent) {
+                terminalStage.classList.add('show');
+                
+                const messages = [
+                    "سیستم ما توسط من و نیروهام هک شده",
+                    "از الان به بعد کنترل سیستم شما دست منه",
+                    "",
+                    "حالا یه چیز جالب براتون دارم...",
+                    ""
+                ];
+                
+                for (const message of messages) {
+                    await typeText(terminalContent, message + '\n', 50);
+                    await sleep(500);
+                }
+                
+                await showVideo();
+                
+                await sleep(1000);
+                const finalMessages = [
+                    "",
+                    "فک نمیکردم شما فسقلی ها...",
+                    "تنهای تنها شدین"
+                ];
+                
+                playAudio('/assets/media/khande.mp3', 0.6);
+                
+                for (const message of finalMessages) {
+                    await typeText(terminalContent, message + '\n', 60);
+                    await sleep(800);
+                }
+            }
+        }
+
+        async function showVideo() {
+            return new Promise((resolve) => {
+                const videoContainer = document.getElementById('videoContainer');
+                const video = document.getElementById('hackVideo');
+                
+                if (videoContainer && video) {
+                    videoContainer.style.display = 'block';
+                    
+                    video.onended = () => {
+                        videoContainer.style.display = 'none';
+                        resolve();
+                    };
+                    
+                    video.onerror = () => {
+                        console.warn('⚠️ خطا در پخش ویدیو');
+                        videoContainer.style.display = 'none';
+                        resolve();
+                    };
+                    
+                    video.play().catch((error) => {
+                        console.warn('⚠️ خطا در شروع پخش ویدیو:', error);
+                        resolve();
+                    });
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        async function typeText(element, text, speed = 50) {
+            return new Promise((resolve) => {
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
+        function playAudio(src, volume = 1.0) {
+            try {
+                stopCurrentAudio();
+                currentAudio = new Audio(src);
+                currentAudio.volume = volume;
+                currentAudio.play().catch((error) => {
+                    console.warn('⚠️ خطا در پخش صدا:', error);
+                });
+            } catch (error) {
+                console.warn('⚠️ خطا در ایجاد Audio:', error);
+            }
+        }
+
+        function stopCurrentAudio() {
+            if (currentAudio) {
+                try {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                } catch (error) {
+                    console.warn('⚠️ خطا در توقف صدا:', error);
+                }
+                currentAudio = null;
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'H') {
+                console.log('🔴 تست سکانس هک فعال شد');
+                startHackSequence();
+            }
+        });
+    </script>
+</body>
+</html>

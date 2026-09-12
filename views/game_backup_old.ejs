@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ترمینال اطلاعاتی سینمایی - کارآگاهی</title>
+    
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #0a0f14;
+            --fg: #c7ffe1;
+            --accent: #54ffbd;
+            --dim: rgba(84,255,189,0.25);
+            --hud: rgba(84,255,189,0.12);
+            --scanline: rgba(255,255,255,0.03);
+            --glow: rgba(84,255,189,0.5);
+            --terminal-bg: #080c10;
+            --widget-bg: #0a1016;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* پس‌زمینه پویا با ذرات شناور */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* کانتینر اصلی کاکپیت */
+        .cockpit-container {
+            display: flex;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* پنل چپ - جریان داده (70%) */
+        .data-stream-panel {
+            flex: 0 0 70%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--glow-cyan);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .panel-header {
+            padding: 20px 25px 15px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(108, 241, 255, 0.05);
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: "⟨";
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .panel-title::after {
+            content: "⟩";
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* منطقه پیام‌ها */
+        .messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* کارت داده با انیمیشن Scanline */
+        .data-card {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            border: 1px solid rgba(108, 241, 255, 0.15);
+            border-radius: 15px;
+            padding: 18px 20px;
+            backdrop-filter: blur(10px);
+            transform: translateY(20px);
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .data-card.user-message {
+            align-self: flex-end;
+            max-width: 75%;
+            border-color: rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+        }
+
+        .data-card.admin-message {
+            align-self: flex-start;
+            max-width: 75%;
+            border-color: rgba(108, 241, 255, 0.3);
+        }
+
+        /* انیمیشن Scanline Reveal */
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--scanline), transparent);
+            animation: scanline 1.2s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        /* نمایشگر تصویر با قاب نئونی */
+        .media-display {
+            margin-top: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .media-display:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(108, 241, 255, 0.5);
+        }
+
+        .media-display img,
+        .media-display video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* پنل راست - دیوار شواهد (30%) */
+        .evidence-panel {
+            flex: 0 0 30%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--glow-blue);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* نقشه شبکه عصبی */
+        .neural-map {
+            flex: 1;
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .neural-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .neural-grid svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .neural-nodes {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        /* نود شبکه عصبی */
+        .neural-node {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.2), rgba(74, 158, 255, 0.1));
+            border: 2px solid rgba(74, 158, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .neural-node.active {
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.4), rgba(74, 158, 255, 0.2));
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+            animation: nodeGlow 2s infinite alternate;
+        }
+
+        @keyframes nodeGlow {
+            0% { box-shadow: var(--glow-blue); }
+            100% { box-shadow: 0 0 40px rgba(74, 158, 255, 0.6); }
+        }
+
+        .neural-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(74, 158, 255, 0.5);
+        }
+
+        .node-icon {
+            font-size: 20px;
+            color: var(--accent-blue);
+        }
+
+        /* Tooltip هولوگرافیک */
+        .holographic-tooltip {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+            border: 1px solid var(--accent-blue);
+            border-radius: 10px;
+            padding: 12px 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--glow-blue);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            min-width: 200px;
+        }
+
+        .holographic-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+
+        .tooltip-content {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* منطقه ورودی */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(108, 241, 255, 0.03);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: vertical;
+            min-height: 45px;
+            max-height: 120px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), rgba(108, 241, 255, 0.8));
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(108, 241, 255, 0.5);
+        }
+
+        .file-btn {
+            background: linear-gradient(135deg, var(--warning), rgba(245, 158, 11, 0.8));
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .file-btn:hover {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+        }
+
+        /* مودال تصاویر */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 15px;
+            box-shadow: var(--glow-cyan);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: var(--accent-cyan);
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            text-shadow: 0 0 10px var(--danger);
+        }
+
+        /* ذرات انیمیشن استخراج */
+        .extraction-particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1500;
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        /* پاسخگویی موبایل */
+        @media (max-width: 768px) {
+            .cockpit-container {
+                flex-direction: column;
+                padding: 10px;
+                gap: 15px;
+            }
+            
+            .data-stream-panel {
+                flex: 1;
+            }
+            
+            .evidence-panel {
+                flex: 0 0 200px;
+            }
+            
+            .data-card {
+                max-width: 90% !important;
+            }
+            
+            .neural-node {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* اسکرول بار سفارشی */
+        .messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: var(--accent-cyan);
+            border-radius: 3px;
+            opacity: 0.7;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(108, 241, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- پس‌زمینه پویا -->
+    <div class="animated-background" id="animatedBg"></div>
+
+    <!-- کانتینر اصلی کاکپیت -->
+    <div class="cockpit-container">
+        <!-- پنل چپ - جریان داده -->
+        <div class="data-stream-panel">
+            <div class="panel-header">
+                <div class="panel-title">جریان داده محیطی</div>
+            </div>
+            <div class="messages-area" id="messagesArea">
+                <!-- پیام‌ها به صورت داینامیک اضافه می‌شوند -->
+            </div>
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="پیام خود را اینجا بنویسید..."
+                        rows="1"
+                    ></textarea>
+                    <div class="action-buttons">
+                        <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
+                        <button class="action-btn file-btn" id="fileBtn">📎</button>
+                        <button class="action-btn" id="sendBtn">ارسال</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- پنل راست - دیوار شواهد -->
+        <div class="evidence-panel">
+            <div class="panel-header">
+                <div class="panel-title">نقشه شبکه عصبی</div>
+            </div>
+            <div class="neural-map">
+                <!-- شبکه پس‌زمینه -->
+                <div class="neural-grid">
+                    <svg>
+                        <defs>
+                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(74, 158, 255, 0.1)" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+                    </svg>
+                </div>
+                
+                <!-- نودهای شبکه عصبی -->
+                <div class="neural-nodes" id="neuralNodes">
+                    <div class="neural-node" data-stage="1">
+                        <div class="node-icon">🔍</div>
+                    </div>
+                    <div class="neural-node" data-stage="2">
+                        <div class="node-icon">📊</div>
+                    </div>
+                    <div class="neural-node" data-stage="3">
+                        <div class="node-icon">🧩</div>
+                    </div>
+                    <div class="neural-node" data-stage="4">
+                        <div class="node-icon">🎯</div>
+                    </div>
+                    <div class="neural-node" data-stage="5">
+                        <div class="node-icon">🏆</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip هولوگرافیک -->
+    <div class="holographic-tooltip" id="holographicTooltip">
+        <div class="tooltip-title" id="tooltipTitle"></div>
+        <div class="tooltip-content" id="tooltipContent"></div>
+    </div>
+
+    <!-- مودال تصاویر -->
+    <div class="image-modal" id="imageModal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+
+    <!-- متغیرهای کاربر -->
+    <script>
+        const userId = <%= userId %>;
+        const username = '<%= username %>';
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/game-client-cockpit.js"></script>
+</body>
+</html>

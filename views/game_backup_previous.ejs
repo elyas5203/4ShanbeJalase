@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>میز کار هولوگرافیک سه‌بعدی — کارآگاهی</title>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root{
+            --bg:#0a0f16;
+            --grid-line:#182033;
+            --card:#0d1622;
+            --hud:#00e6ff;
+            --hud-soft: rgba(0,230,255,0.25);
+            --text:#cde6f7;
+            --muted:#7aa3b7;
+            --accent:#4ef3ff;
+            --warn:#ff6b6b;
+            --glow:0 0 30px rgba(0,230,255,0.35);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { 
+            height: 100%; 
+            background: radial-gradient(1200px at 50% 20%, #0c1522 0%, #070b12 40%, #04070d 100%); 
+        }
+        body {
+            margin: 0;
+            font-family: "IRANSans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* صحنه سه‌بعدی با پرسپکتیو سراسری */
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1200px;
+            perspective-origin: 50% 40%;
+        }
+
+        /* لایه محیطی برای جریان داده */
+        .ambient {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* خطوط متن محیطی */
+        .ambient-line {
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            color: var(--muted);
+            opacity: 0.18;
+            font-size: 14px;
+            letter-spacing: 0.12em;
+            white-space: nowrap;
+            filter: blur(0.25px);
+            transform: translateZ(-300px) rotateX(2deg);
+            will-change: transform, opacity, filter;
+            mix-blend-mode: screen;
+        }
+        .ambient-line::before {
+            content: "⟨ داده ⟩ ";
+            color: var(--accent);
+            opacity: 0.35;
+        }
+
+        /* کانتینر مرکزی گرید شواهد */
+        .deck {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: clamp(680px, 64vw, 980px);
+            height: clamp(380px, 48vh, 620px);
+            transform-style: preserve-3d;
+            transform: translate(-50%, -50%) rotateX(6deg) rotateY(0deg);
+            z-index: 3;
+            transition: transform 600ms cubic-bezier(.2,.75,.2,1.0);
+        }
+        
+        .grid {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 18px;
+            padding: 18px;
+            transform-style: preserve-3d;
+        }
+
+        /* کارت هولوگرافیک */
+        .card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(13,22,34,0.85), rgba(10,17,27,0.9));
+            border: 1px solid rgba(0,230,255,0.14);
+            border-radius: 16px;
+            box-shadow: inset 0 0 18px rgba(0,230,255,0.08), 0 6px 24px rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px) saturate(1.1);
+            transform-style: preserve-3d;
+            transform: translateZ(0px);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 160ms ease;
+        }
+        .glare {
+            position: absolute;
+            inset: -40%;
+            background: radial-gradient(120px at var(--gx,50%) var(--gy,50%), rgba(255,255,255,0.25), rgba(255,255,255,0.06) 60%, transparent 62%);
+            mix-blend-mode: soft-light;
+            transform: translateZ(60px) rotateZ(8deg);
+            opacity: 0;
+            transition: opacity 180ms ease;
+            pointer-events: none;
+        }
+        .card:hover .glare { opacity: 0.8; }
+        
+        .card h3 {
+            margin: 14px 14px 6px;
+            font-size: 16px;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            transform: translateZ(60px);
+            text-shadow: 0 0 10px rgba(78,243,255,0.35);
+        }
+        .meta {
+            margin: 0 14px 14px;
+            font-size: 12px;
+            color: var(--muted);
+            transform: translateZ(40px);
+            line-height: 1.6;
+        }
+
+        /* ورودی متن ساده شده */
+        .cli {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(720px, 80vw);
+            z-index: 6;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 10px 12px;
+            border: 1px solid rgba(0,230,255,0.25);
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(6,12,18,0.85), rgba(8,14,22,0.85));
+            box-shadow: inset 0 0 20px rgba(0,230,255,0.06), var(--glow);
+            backdrop-filter: blur(6px);
+        }
+        .cli input {
+            flex: 1;
+            padding: 12px 10px;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,230,255,0.35);
+            color: var(--text);
+            background: linear-gradient(180deg, rgba(0,230,255,0.14), rgba(0,230,255,0.08));
+            box-shadow: var(--glow);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease;
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 0 40px rgba(0,230,255,0.45); 
+        }
+        
+        /* دکمه آپلود فایل */
+        .file-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,107,107,0.35);
+            color: var(--warn);
+            background: linear-gradient(180deg, rgba(255,107,107,0.14), rgba(255,107,107,0.08));
+            box-shadow: 0 0 20px rgba(255,107,107,0.25);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease;
+            font-size: 14px;
+        }
+        .file-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 0 30px rgba(255,107,107,0.45); 
+        }
+        
+        /* افکت هایلایت خطوط محیطی هنگام استخراج */
+        .ambient-line.highlight {
+            color: var(--accent);
+            opacity: 0.45;
+            filter: brightness(1.4) drop-shadow(0 0 6px rgba(78,243,255,0.65));
+        }
+
+        /* ذرات برای انیمیشن استخراج */
+        .particle {
+            position: fixed;
+            width: 4px; 
+            height: 4px;
+            background: radial-gradient(circle, #aaffff 10%, #66ffcc 70%, transparent 90%);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(108,241,255,0.9), 0 0 24px rgba(102,255,204,0.6);
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.95;
+        }
+
+        /* مودال تصاویر */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: var(--accent);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .close-btn:hover {
+            color: var(--warn);
+            text-shadow: 0 0 10px rgba(255,107,107,0.8);
+        }
+
+        /* راهنمای بصری برای کودکان */
+        .guide-pulse {
+            animation: guidePulse 2s infinite;
+        }
+
+        @keyframes guidePulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(78,243,255,0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(78,243,255,0.6);
+                transform: scale(1.02);
+            }
+        }
+
+        /* پاسخگویی موبایل */
+        @media (max-width: 768px) {
+            .deck {
+                width: 95vw;
+                height: 60vh;
+            }
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 12px;
+                padding: 12px;
+            }
+            .cli {
+                width: 95vw;
+                bottom: 12px;
+            }
+            .ambient-line {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="ambient" id="ambient"></div>
+        <div class="deck" id="deck">
+            <div class="grid" id="grid"></div>
+        </div>
+        <div class="cli">
+            <input type="text" id="cliInput" placeholder="پیام خود را اینجا بنویسید..."/>
+            <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
+            <button class="file-btn" id="fileBtn">📎 فایل</button>
+            <button class="btn guide-pulse" id="sendBtn">ارسال</button>
+        </div>
+    </div>
+
+    <!-- مودال تصاویر -->
+    <div id="image-modal" class="image-modal">
+        <!-- محتوا توسط JavaScript اضافه می‌شود -->
+    </div>
+
+    <!-- متغیرهای کاربر -->
+    <script>
+        const userId = <%= userId %>;
+        const username = '<%= username %>';
+    </script>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/game-client-holographic.js"></script>
+</body>
+</html>

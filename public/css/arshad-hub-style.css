@@ -1,0 +1,18 @@
+/* public/css/arshad-hub-style.css */
+body { margin: 0; background-color: #000; overflow: hidden; }
+#three-canvas { position: fixed; top: 0; left: 0; outline: none; }
+.ui-container { position: fixed; top: 20px; left: 20px; z-index: 10; }
+.btn { /* استایل دکمه‌های شما */
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 255, 200, 0.6);
+  background: radial-gradient(circle at top, rgba(0, 255, 200, 0.2), rgba(0, 20, 30, 0.95));
+  color: #e0fdf7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  box-shadow:
+    0 0 12px rgba(0, 255, 200, 0.3),
+    0 6px 14px rgba(0, 0, 0, 0.7);
+}
