@@ -1,0 +1,6 @@
+{
+  "name": "SaaS Subscription Manager",
+  "description": "سیستم جامع مدیریت فروش اشتراک سازمانی ChatGPT، ربات‌های تلگرام و بله، اتصال درگاه پی‌پینگ و پنل ادمین",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
