@@ -59,8 +59,11 @@ class SubscriptionService:
         """Creates a pending subscription & PayPing payment order."""
         plan = db.query(Plan).filter(Plan.id == plan_id).first()
         product = db.query(Product).filter(Product.id == product_id).first()
-        if not plan or not product:
+        if not plan or not product or plan.product_id != product.id:
             return None, "پلن یا محصول یافت نشد."
+
+        if not plan.is_active or not product.is_active:
+            return None, "این پلن در حال حاضر قابل خرید نیست."
 
         # Check if user already has an active or pending subscription for this product (Smart Renewal)
         existing_sub = db.query(Subscription).filter(
@@ -86,11 +89,10 @@ class SubscriptionService:
             db.flush()
 
         # If the plan has a direct PayPing product link (e.g. ppng.ir/d/gEQe), use it directly
-        if plan.payping_product_url:
-            direct_url = plan.payping_product_url.strip()
-            if not direct_url.startswith("http://") and not direct_url.startswith("https://"):
-                direct_url = f"https://{direct_url}"
-            return direct_url, None
+        # Direct PayPing product links cannot carry our unique clientRefId and
+        # therefore cannot be reconciled reliably with a subscription callback.
+        # Always create the payment through the API so admin/user notifications
+        # are tied to the exact order.
 
         # Generate unique reference ID
         client_ref_id = f"SUB-{sub.id}-{uuid.uuid4().hex[:6].upper()}"

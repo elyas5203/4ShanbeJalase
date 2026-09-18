@@ -82,6 +82,7 @@ export interface SystemSettings {
   payping_return_url: string;
   test_mode: boolean;
   welcome_msg: string;
+  support_msg: string;
   reminder_5d_msg: string;
   reminder_3d_msg: string;
   reminder_exp_msg: string;

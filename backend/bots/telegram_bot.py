@@ -9,6 +9,7 @@ from backend.core.config import settings
 from backend.core.database import SessionLocal
 from backend.models.database_models import Product, Plan, User, Subscription, SystemSetting
 from backend.services.subscription_service import SubscriptionService
+from backend.services.settings_service import SettingsService
 
 logger = logging.getLogger("telegram_bot")
 
@@ -266,12 +267,14 @@ def setup_telegram_bot():
 
     @dp.message(F.text == "📞 پشتیبانی")
     async def support_info(message: types.Message):
-        await message.answer(
-            "📞 <b>پشتیبانی و سوالات:</b>\n\n"
-            "در صورت وجود هرگونه سوال پیرامون فعال‌سازی، تمدید یا دسترسی، با تیم پشتیبانی در ارتباط باشید:\n"
-            "🆔 آیدی پشتیبانی: @ai_support_admin\n"
-            "⏱ ساعات پاسخگویی: ۹ صبح الی ۲۴",
-            parse_mode="HTML"
-        )
+        db = SessionLocal()
+        try:
+            support_text = SettingsService.get(
+                db, "support_msg",
+                "📞 <b>پشتیبانی و سوالات:</b>\n\nبرای دریافت راهنمایی با پشتیبانی در ارتباط باشید."
+            )
+        finally:
+            db.close()
+        await message.answer(support_text, parse_mode="HTML")
 
     return bot, dp

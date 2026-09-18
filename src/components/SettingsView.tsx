@@ -59,6 +59,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onSaveSett
             </div>
 
             <div>
+              <label className="block text-xs font-semibold text-indigo-300 mb-1">
+                متن بخش پشتیبانی ربات:
+              </label>
+              <textarea
+                rows={3}
+                value={form.support_msg || ''}
+                onChange={(e) => setForm({ ...form, support_msg: e.target.value })}
+                placeholder="متن، آیدی پشتیبانی و ساعات پاسخ‌گویی را اینجا وارد کنید."
+                className="w-full p-2.5 rounded-xl bg-slate-950 border border-indigo-500/40 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-sans"
+              />
+            </div>
+
+            <div>
               <label className="block text-xs font-medium text-slate-300 mb-1">توکن ربات بله (Bale Bot Token):</label>
               <input
                 type="text"

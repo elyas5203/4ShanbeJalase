@@ -3,6 +3,7 @@ import logging
 from sqlalchemy.orm import Session
 from backend.models.database_models import Subscription, User, Product, ReminderLog
 from backend.services.notifier import Notifier
+from backend.services.settings_service import SettingsService
 
 logger = logging.getLogger("reminders")
 
@@ -18,6 +19,10 @@ class ReminderService:
         - 2 days past expiry -> Admin warning to revoke ChatGPT workspace seat!
         """
         now = datetime.datetime.utcnow()
+        reminder_5d = SettingsService.get(db, "reminder_5d_msg", "⏳ اشتراک {product} شما ۵ روز دیگر به پایان می‌رسد.")
+        reminder_3d = SettingsService.get(db, "reminder_3d_msg", "⏳ فقط ۳ روز تا پایان اشتراک {product} شما باقی مانده است.")
+        reminder_exp = SettingsService.get(db, "reminder_exp_msg", "❗ اشتراک {product} شما امروز به پایان می‌رسد.")
+        admin_expired = SettingsService.get(db, "admin_expired_msg", "🚨 اشتراک کاربر {name} ({phone}) برای محصول {product} منقضی شده است.")
         
         active_subs = db.query(Subscription).filter(
             Subscription.status.in_(["ACTIVE", "EXPIRED"]),
@@ -40,16 +45,14 @@ class ReminderService:
                     db=db, sub_id=sub.id, stage="5_DAYS", recipient="USER",
                     action=lambda: Notifier.notify_user(
                         sub.source_platform, user_chat_id,
-                        f"⏳ <b>یادآوری تمدید اشتراک {product.name}</b>\n\n"
-                        f"اشتراک شما ۵ روز دیگر به پایان می‌رسد.\n"
-                        f"جهت حفظ دسترسی بدون وقفه، می‌توانید هم‌اکنون از منوی ربات اقدام به تمدید فرمایید."
+                        SettingsService.render(reminder_5d, product=product.name, name=user.name, phone=user.phone or "-")
                     )
                 )
                 await cls._send_reminder_once(
                     db=db, sub_id=sub.id, stage="5_DAYS", recipient="ADMIN",
                     action=lambda: Notifier.notify_admin(
-                        f"⚠️ <b>نزدیک شدن به پایان اشتراک</b>\n\n"
-                        f"اشتراک کاربر <b>{user.name}</b> ({user.phone or '-'}) برای محصول <b>{product.name}</b> ۵ روز دیگر تمام می‌شود."
+                        "⚠️ <b>یادآوری پایان اشتراک ادمین</b>\n\n" +
+                        SettingsService.render(reminder_5d, product=product.name, name=user.name, phone=user.phone or "-")
                     )
                 )
 
@@ -59,9 +62,7 @@ class ReminderService:
                     db=db, sub_id=sub.id, stage="3_DAYS", recipient="USER",
                     action=lambda: Notifier.notify_user(
                         sub.source_platform, user_chat_id,
-                        f"⏳ <b>یادآوری دوم تمدید اشتراک {product.name}</b>\n\n"
-                        f"فقط ۳ روز تا اتمام اشتراک شما باقی مانده است.\n"
-                        f"برای تمدید و عدم قطع دسترسی، لطفاً اقدام به خرید پلن جدید فرمایید."
+                        SettingsService.render(reminder_3d, product=product.name, name=user.name, phone=user.phone or "-")
                     )
                 )
 
@@ -71,9 +72,7 @@ class ReminderService:
                     db=db, sub_id=sub.id, stage="EXPIRED_TODAY", recipient="USER",
                     action=lambda: Notifier.notify_user(
                         sub.source_platform, user_chat_id,
-                        f"❗️ <b>پایان مهلت اشتراک {product.name}</b>\n\n"
-                        f"اشتراک شما امروز به پایان می‌رسد.\n"
-                        f"جهت جلوگیری از قطع دسترسی و حذف اکانت از فضای سازمانی، لطفاً امروز تمدید نمایید."
+                        SettingsService.render(reminder_exp, product=product.name, name=user.name, phone=user.phone or "-")
                     )
                 )
 
@@ -86,9 +85,7 @@ class ReminderService:
                 await cls._send_reminder_once(
                     db=db, sub_id=sub.id, stage="2_DAYS_AFTER", recipient="ADMIN",
                     action=lambda: Notifier.notify_admin(
-                        f"🚨 <b>اقدام ادمین: اشتراک منقضی شده!</b>\n\n"
-                        f"اشتراک کاربر <b>{user.name}</b> ({user.phone or '-'}) برای محصول <b>{product.name}</b> ۲ روز است منقضی شده است.\n"
-                        f"لطفاً دسترسی را بررسی و در صورت عدم تمدید از فضای Workspace سازمانی قطع کنید."
+                        SettingsService.render(admin_expired, product=product.name, name=user.name, phone=user.phone or "-")
                     )
                 )
 

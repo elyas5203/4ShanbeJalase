@@ -25,10 +25,12 @@ async def payping_callback(request: Request, db: Session = Depends(get_db)):
             form = await request.form()
             params.update(dict(form))
 
-    code = params.get("code") or params.get("refid") or params.get("ref_id")
-    client_ref_id = params.get("clientrefid") or params.get("client_ref_id")
+    # PayPing returns refid/clientrefid (casing varies between integrations).
+    normalized = {str(k).lower(): v for k, v in params.items()}
+    ref_id = normalized.get("refid") or normalized.get("ref_id")
+    client_ref_id = normalized.get("clientrefid") or normalized.get("client_ref_id")
     
-    if not code or not client_ref_id:
+    if not ref_id or not client_ref_id:
         return HTMLResponse(
             content="<h2 style='text-align:center;color:red;font-family:sans-serif;margin-top:50px;'>پارامترهای بازگشت از درگاه پرداخت ناقص است.</h2>",
             status_code=400
@@ -37,7 +39,7 @@ async def payping_callback(request: Request, db: Session = Depends(get_db)):
     success, msg = await SubscriptionService.process_successful_payment(
         db=db,
         client_ref_id=client_ref_id,
-        payment_code=code
+        payment_code=ref_id
     )
 
     if success:

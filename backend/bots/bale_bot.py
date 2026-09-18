@@ -4,7 +4,7 @@ import logging
 import httpx
 from backend.core.config import settings
 from backend.core.database import SessionLocal
-from backend.models.database_models import Product, Plan, User, Subscription
+from backend.models.database_models import Product, Plan, User, Subscription, SystemSetting
 from backend.services.subscription_service import SubscriptionService
 
 logger = logging.getLogger("bale_bot")
@@ -64,11 +64,13 @@ class BaleBot:
 
             if text == "/start" or text == "منو":
                 self.user_states.pop(chat_id, None)
-                welcome = (
-                    f"سلام {sender_name} عزیز! 🌸\n"
-                    f"به بات فروش اشتراک‌های هوش مصنوعی (ChatGPT سازمانی و Gemini) خوش آمدید.\n\n"
-                    f"برای مشاهده و خرید روی دکمه زیر کلیک کنید:"
-                )
+                db = SessionLocal()
+                try:
+                    row = db.query(SystemSetting).filter(SystemSetting.key == "welcome_msg").first()
+                    template = row.value if row and row.value else "سلام {name} عزیز! 🌸\nبه سامانه فروش اشتراک خوش آمدید."
+                    welcome = template.replace("{name}", sender_name)
+                finally:
+                    db.close()
                 keyboard = {
                     "inline_keyboard": [
                         [{"text": "🛍 مشاهده و خرید اشتراک", "callback_data": "show_products"}],

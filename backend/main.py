@@ -79,6 +79,10 @@ app.add_middleware(
 app.include_router(payment_router)
 app.include_router(admin_router)
 
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "service": "SaaS Subscription Manager", "version": "1.0.0"}
+
 # Serve admin panel on /admin and / (protected by admin username/password)
 @app.get("/admin")
 @app.get("/admin/{full_path:path}")
@@ -95,11 +99,6 @@ def serve_admin_panel(username: str = Depends(require_admin)):
 # password-protected /admin route above, not an unauthenticated "/".
 if os.path.exists("dist"):
     app.mount("/", StaticFiles(directory="dist", html=False), name="static")
-
-@app.get("/api/health")
-
-def health():
-    return {"status": "ok", "service": "SaaS Subscription Manager", "version": "1.0.0"}
 
 if __name__ == "__main__":
     uvicorn.run("backend.main:app", host="0.0.0.0", port=settings.PORT, reload=False)

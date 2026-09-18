@@ -22,6 +22,7 @@ const INITIAL_SETTINGS: SystemSettings = {
   payping_return_url: '',
   test_mode: false,
   welcome_msg: 'سلام {name} عزیز! 👋\nبه سیستم خرید اشتراک هوش مصنوعی خوش آمدید.\nجهت مشاهده و خرید اشتراک روی دکمه زیر کلیک فرمایید:',
+  support_msg: '📞 <b>پشتیبانی و سوالات:</b>\n\nبرای فعال‌سازی، تمدید یا دریافت راهنمایی با پشتیبانی در ارتباط باشید.',
   reminder_5d_msg: 'اشتراک شما ۵ روز دیگر به پایان می‌رسد. لطفاً جهت تمدید اقدام فرمایید.',
   reminder_3d_msg: 'یادآوری دوم: ۳ روز تا پایان اشتراک شما باقی مانده است.',
   reminder_exp_msg: 'اشتراک شما امروز به پایان می‌رسد.',
@@ -113,26 +114,18 @@ export class StorageService {
     await apiFetch(`/api/admin/plans/${id}`, { method: 'DELETE' });
   }
 
-  // --- Users (local demo data; not yet wired to the real backend) ---
+  // --- Operational data (real backend database — shared with the bots) ---
 
-  static getUsers(): User[] {
-    return this.getItem<User[]>(STORAGE_KEYS.USERS, INITIAL_USERS);
+  static async getUsers(): Promise<User[]> {
+    return apiFetch('/api/admin/users');
   }
 
   static saveUsers(users: User[]): void {
     this.setItem(STORAGE_KEYS.USERS, users);
   }
 
-  static getSubscriptions(products: Product[] = [], plans: Plan[] = []): Subscription[] {
-    const subs = this.getItem<Subscription[]>(STORAGE_KEYS.SUBSCRIPTIONS, INITIAL_SUBSCRIPTIONS);
-    const users = this.getUsers();
-
-    return subs.map(sub => ({
-      ...sub,
-      user: users.find(u => u.id === sub.user_id),
-      product: products.find(p => p.id === sub.product_id),
-      plan: plans.find(pl => pl.id === sub.plan_id),
-    }));
+  static async getSubscriptions(): Promise<Subscription[]> {
+    return apiFetch('/api/admin/subscriptions');
   }
 
   static saveSubscriptions(subs: Subscription[]): void {
@@ -140,34 +133,32 @@ export class StorageService {
     this.setItem(STORAGE_KEYS.SUBSCRIPTIONS, plain);
   }
 
-  static getPayments(): Payment[] {
-    return this.getItem<Payment[]>(STORAGE_KEYS.PAYMENTS, INITIAL_PAYMENTS);
+  static async getPayments(): Promise<Payment[]> {
+    return apiFetch('/api/admin/payments');
   }
 
   static savePayments(payments: Payment[]): void {
     this.setItem(STORAGE_KEYS.PAYMENTS, payments);
   }
 
-  static getSettings(): SystemSettings {
-    const local = this.getItem<SystemSettings>(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
-    // Fetch latest from backend asynchronously in background
-    fetch('/api/admin/settings')
-      .then(res => res.ok ? res.json() : null)
-      .then(backendSettings => {
-        if (backendSettings && Object.keys(backendSettings).length > 0) {
-          const merged = { ...local, ...backendSettings };
-          this.setItem(STORAGE_KEYS.SETTINGS, merged);
-        }
-      })
-      .catch(() => {});
-    return local;
+  static getCachedSettings(): SystemSettings {
+    return this.getItem<SystemSettings>(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
   }
 
-  static saveSettings(settings: SystemSettings): void {
+  static async getSettings(): Promise<SystemSettings> {
+    const local = this.getItem<SystemSettings>(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
+    const backendSettings = await apiFetch('/api/admin/settings');
+    const merged = { ...local, ...backendSettings };
+    this.setItem(STORAGE_KEYS.SETTINGS, merged);
+    return merged;
+  }
+
+  static async saveSettings(settings: SystemSettings): Promise<void> {
     this.setItem(STORAGE_KEYS.SETTINGS, settings);
     // Persist each setting to backend SQLite database
     const entries = [
       { key: 'welcome_msg', value: settings.welcome_msg || '' },
+      { key: 'support_msg', value: settings.support_msg || '' },
       { key: 'telegram_token', value: settings.telegram_token || '' },
       { key: 'bale_token', value: settings.bale_token || '' },
       { key: 'admin_telegram_chat_id', value: settings.admin_telegram_chat_id || '' },
@@ -179,13 +170,9 @@ export class StorageService {
       { key: 'admin_expired_msg', value: settings.admin_expired_msg || '' },
     ];
 
-    entries.forEach(entry => {
-      fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry),
-      }).catch(err => console.error('Failed to sync setting to backend:', entry.key, err));
-    });
+    await Promise.all(entries.map(entry => apiFetch('/api/admin/settings', {
+      method: 'POST', body: JSON.stringify(entry),
+    })));
   }
 
   static getLogs(): ActivityLog[] {
@@ -206,67 +193,23 @@ export class StorageService {
 
   // --- Actions on the local demo subscriptions/payments ---
 
-  static activateSubscription(subId: number, plans: Plan[], adminNotes: string = ''): Subscription {
-    const subs = this.getSubscriptions();
-    const sub = subs.find(s => s.id === subId);
-    if (!sub) throw new Error('اشتراک یافت نشد');
-
-    const plan = plans.find(p => p.id === sub.plan_id);
-    const duration = plan ? plan.duration_days : 30;
-
-    const now = new Date();
-    sub.status = 'ACTIVE';
-    sub.start_date = now.toISOString();
-
-    const end = new Date(now.getTime() + duration * 86400000);
-    sub.end_date = end.toISOString();
-    if (adminNotes) {
-      sub.admin_notes = adminNotes;
-    }
-
-    this.saveSubscriptions(subs);
-    this.addLog(
-      'activation',
-      'فعال‌سازی دستی اشتراک',
-      `اشتراک ${sub.product?.name || ''} برای کاربر ${sub.user?.name || ''} تا تاریخ ${end.toLocaleDateString('fa-IR')} فعال شد.`
-    );
-    return sub;
+  static async activateSubscription(subId: number, _plans: Plan[], adminNotes: string = ''): Promise<void> {
+    await apiFetch(`/api/admin/subscriptions/${subId}/activate`, {
+      method: 'POST', body: JSON.stringify({ admin_notes: adminNotes }),
+    });
   }
 
-  static extendSubscription(subId: number, days: number, adminNotes?: string): Subscription {
-    const subs = this.getSubscriptions();
-    const sub = subs.find(s => s.id === subId);
-    if (!sub) throw new Error('اشتراک یافت نشد');
-
-    const currentEnd = sub.end_date ? new Date(sub.end_date) : new Date();
-    const baseDate = currentEnd > new Date() ? currentEnd : new Date();
-    const newEnd = new Date(baseDate.getTime() + days * 86400000);
-
-    sub.end_date = newEnd.toISOString();
-    sub.status = 'ACTIVE';
-    sub.auto_renew_count = (sub.auto_renew_count || 0) + 1;
-    if (adminNotes) {
-      sub.admin_notes = adminNotes;
-    }
-
-    this.saveSubscriptions(subs);
-    this.addLog(
-      'renewal',
-      'تمدید هوشمند اشتراک',
-      `اشتراک ${sub.user?.name || ''} به مدت ${days} روز تمدید شد (تا ${newEnd.toLocaleDateString('fa-IR')}).`
-    );
-    return sub;
+  static async extendSubscription(subId: number, days: number, adminNotes?: string): Promise<void> {
+    await apiFetch(`/api/admin/subscriptions/${subId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'ACTIVE', admin_notes: adminNotes || '', extend_days: days }),
+    });
   }
 
-  static updateSubscriptionStatus(subId: number, status: Subscription['status'], notes?: string): void {
-    const subs = this.getSubscriptions();
-    const sub = subs.find(s => s.id === subId);
-    if (sub) {
-      sub.status = status;
-      if (notes !== undefined) sub.admin_notes = notes;
-      this.saveSubscriptions(subs);
-      this.addLog('activation', 'تغییر وضعیت اشتراک', `وضعیت اشتراک ${sub.user?.name || ''} به ${status} تغییر یافت.`);
-    }
+  static async updateSubscriptionStatus(subId: number, status: Subscription['status'], notes?: string): Promise<void> {
+    await apiFetch(`/api/admin/subscriptions/${subId}`, {
+      method: 'PATCH', body: JSON.stringify({ status, admin_notes: notes || '', extend_days: 0 }),
+    });
   }
 
   static simulatePurchase(params: {
@@ -275,7 +218,8 @@ export class StorageService {
     platform: 'telegram' | 'bale';
     customerInfo: Record<string, string>;
   }, products: Product[], plans: Plan[]): { sub: Subscription; payment: Payment } {
-    const users = this.getUsers();
+    // Simulator data is deliberately isolated from production records.
+    const users = this.getItem<User[]>(STORAGE_KEYS.USERS, INITIAL_USERS);
 
     const plan = plans.find(p => p.id === params.planId);
     const product = products.find(p => p.id === params.productId);
@@ -301,7 +245,7 @@ export class StorageService {
       this.saveUsers(users);
     }
 
-    const subs = this.getSubscriptions();
+    const subs = this.getItem<Subscription[]>(STORAGE_KEYS.SUBSCRIPTIONS, INITIAL_SUBSCRIPTIONS);
 
     // Check for SMART RENEWAL on active/expiring subscription
     let existingSub = subs.find(s => s.user_id === user!.id && s.product_id === product.id && (s.status === 'ACTIVE' || s.status === 'PENDING_ACTIVATION'));
@@ -333,7 +277,7 @@ export class StorageService {
     this.saveSubscriptions(subs);
 
     // Record Payment
-    const payments = this.getPayments();
+    const payments = this.getItem<Payment[]>(STORAGE_KEYS.PAYMENTS, INITIAL_PAYMENTS);
     const clientRefId = `SUB-${sub.id}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     const refId = `SHAPARAK_${Math.floor(10000000 + Math.random() * 90000000)}`;
 
@@ -362,47 +306,8 @@ export class StorageService {
     return { sub, payment };
   }
 
-  static getStats(): DashboardStats {
-    const subs = this.getSubscriptions();
-    const payments = this.getPayments().filter(p => p.status === 'SUCCESS');
-    const users = this.getUsers();
-
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    const monthStr = now.toISOString().substring(0, 7);
-
-    const todaySales = payments
-      .filter(p => p.paid_at && p.paid_at.startsWith(todayStr))
-      .reduce((sum, p) => sum + p.amount, 0);
-
-    const monthSales = payments
-      .filter(p => p.paid_at && p.paid_at.startsWith(monthStr))
-      .reduce((sum, p) => sum + p.amount, 0);
-
-    const totalSales = payments.reduce((sum, p) => sum + p.amount, 0);
-
-    const activeUsers = subs.filter(s => s.status === 'ACTIVE').length;
-    const pendingActivation = subs.filter(s => s.status === 'PENDING_ACTIVATION').length;
-    const expiredUsers = subs.filter(s => s.status === 'EXPIRED').length;
-
-    // Expiring within 5 days
-    const fiveDaysFromNow = new Date(now.getTime() + 5 * 86400000);
-    const expiringSoon = subs.filter(s => {
-      if (s.status !== 'ACTIVE' || !s.end_date) return false;
-      const end = new Date(s.end_date);
-      return end >= now && end <= fiveDaysFromNow;
-    }).length;
-
-    return {
-      today_sales: todaySales,
-      month_sales: monthSales,
-      total_sales: totalSales,
-      active_users: activeUsers,
-      pending_activation: pendingActivation,
-      expired_users: expiredUsers,
-      expiring_soon: expiringSoon,
-      total_users: users.length
-    };
+  static async getStats(): Promise<DashboardStats> {
+    return apiFetch('/api/admin/stats');
   }
 
   static resetToFreshState(): void {

@@ -24,7 +24,7 @@ export default function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [settings, setSettings] = useState<SystemSettings>(StorageService.getSettings());
+  const [settings, setSettings] = useState<SystemSettings>(StorageService.getCachedSettings());
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     today_sales: 0,
@@ -38,18 +38,23 @@ export default function App() {
   });
 
   const refreshAllData = async () => {
-    const [freshProducts, freshPlans] = await Promise.all([
+    const [freshProducts, freshPlans, freshUsers, freshSubscriptions, freshPayments, freshSettings, freshStats] = await Promise.all([
       StorageService.getProducts(),
       StorageService.getPlans(),
+      StorageService.getUsers(),
+      StorageService.getSubscriptions(),
+      StorageService.getPayments(),
+      StorageService.getSettings(),
+      StorageService.getStats(),
     ]);
     setProducts(freshProducts);
     setPlans(freshPlans);
-    setUsers(StorageService.getUsers());
-    setSubscriptions(StorageService.getSubscriptions(freshProducts, freshPlans));
-    setPayments(StorageService.getPayments());
-    setSettings(StorageService.getSettings());
+    setUsers(freshUsers);
+    setSubscriptions(freshSubscriptions);
+    setPayments(freshPayments);
+    setSettings(freshSettings);
     setLogs(StorageService.getLogs());
-    setStats(StorageService.getStats());
+    setStats(freshStats);
   };
 
   useEffect(() => {
@@ -57,24 +62,24 @@ export default function App() {
   }, []);
 
   // Handlers
-  const handleQuickActivate = (subId: number) => {
-    StorageService.activateSubscription(subId, plans);
-    refreshAllData();
+  const handleQuickActivate = async (subId: number) => {
+    await StorageService.activateSubscription(subId, plans);
+    await refreshAllData();
   };
 
-  const handleActivateWithNotes = (subId: number, adminNotes: string) => {
-    StorageService.activateSubscription(subId, plans, adminNotes);
-    refreshAllData();
+  const handleActivateWithNotes = async (subId: number, adminNotes: string) => {
+    await StorageService.activateSubscription(subId, plans, adminNotes);
+    await refreshAllData();
   };
 
-  const handleExtend = (subId: number, days: number, adminNotes?: string) => {
-    StorageService.extendSubscription(subId, days, adminNotes);
-    refreshAllData();
+  const handleExtend = async (subId: number, days: number, adminNotes?: string) => {
+    await StorageService.extendSubscription(subId, days, adminNotes);
+    await refreshAllData();
   };
 
-  const handleUpdateStatus = (subId: number, status: SubscriptionStatus, notes?: string) => {
-    StorageService.updateSubscriptionStatus(subId, status, notes);
-    refreshAllData();
+  const handleUpdateStatus = async (subId: number, status: SubscriptionStatus, notes?: string) => {
+    await StorageService.updateSubscriptionStatus(subId, status, notes);
+    await refreshAllData();
   };
 
   const handleCreateProduct = async (product: Omit<Product, 'id'>) => {
@@ -107,9 +112,9 @@ export default function App() {
     await refreshAllData();
   };
 
-  const handleSaveSettings = (newSettings: SystemSettings) => {
-    StorageService.saveSettings(newSettings);
-    refreshAllData();
+  const handleSaveSettings = async (newSettings: SystemSettings) => {
+    await StorageService.saveSettings(newSettings);
+    await refreshAllData();
   };
 
   const handleSimulatePurchase = (params: {
